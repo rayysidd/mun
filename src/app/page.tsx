@@ -3,7 +3,7 @@
 import React,{useState} from "react";
 import MUNForm from "@/components/MUNForm";
 import MUNOutput from "@/components/MUNOutput";
-import { headers } from "next/headers";
+// import { headers } from "next/headers";
 
 export default function Home(){
   const [country,setCountry] = useState('');
@@ -128,7 +128,7 @@ const handleBack = () => {
                   <div className="text-center p-2 sm:p-4 bg-indigo-50 rounded-lg sm:rounded-xl">
                     <div className="text-lg sm:text-2xl mb-1 sm:mb-2">🎯</div>
                     <div className="text-xs sm:text-sm font-medium text-gray-700">Country-Specific</div>
-                    <div className="text-xs text-gray-500 mt-1 hidden sm:block">Tailored to your nation's stance</div>
+                    <div className="text-xs text-gray-500 mt-1 hidden sm:block">Tailored to your nations stance</div>
                   </div>
                   <div className="text-center p-2 sm:p-4 bg-purple-50 rounded-lg sm:rounded-xl">
                     <div className="text-lg sm:text-2xl mb-1 sm:mb-2">📝</div>

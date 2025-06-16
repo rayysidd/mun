@@ -27,9 +27,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* Add the UnifrakturMaguntia font */}
-        <style>
-@import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap');
-</style>
+        
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
