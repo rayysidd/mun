@@ -33,6 +33,7 @@ export default function Home(){
           topic: topic,
           country: country,
           type: type,
+          committee:committee,
           context: fullContext
         }),
       });
@@ -56,6 +57,7 @@ const handleBack = () => {
   };
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
+      
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full blur-3xl"></div>
@@ -79,10 +81,14 @@ const handleBack = () => {
             
             {/* Header */}
             <div className="text-center p-4 sm:p-6 lg:p-8 pb-4 sm:pb-6 border-b border-gray-100">
-              <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full mb-3 sm:mb-4 shadow-lg">
-                <span className="text-xl sm:text-2xl text-white">🏛️</span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+              <div className="inline-flex items-center justify-center w-25 h-25 sm:w-20 sm:h-20 bg-white rounded-full mb-4 shadow-lg border border-gray-200">
+                <img
+                src="https://upload.wikimedia.org/wikipedia/commons/e/ee/UN_emblem_blue.svg"
+                alt="UN Logo"
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+              />
+            </div>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-unifraktur text-gray-800 mb-2">
                 DiploMate
               </h1>
               <p className="text-gray-600 max-w-md mx-auto leading-relaxed text-sm sm:text-base px-2">

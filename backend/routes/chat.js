@@ -8,14 +8,15 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 // Chat endpoint
 router.post('/', async (req, res) => {
   try {
-    const { message, country, context } = req.body;
+    const { topic,committee, country,type, context } = req.body;
     
     // Initialize the model
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     // Construct the prompt with country-specific context
-    const prompt = `As a representative of ${country}, please provide a diplomatic response to the following MUN-related query: ${message}
-    Context: ${context}
+    const prompt = `As a representative of ${country}, please provide a ${type} for the commiittee ${committee},on the topic ${topic}
+    Context: ${context}.
+    Include the name of the committee as well (${committee})
     Please maintain consider the country's stance on international issues.`;
 
     // Generate response

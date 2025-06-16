@@ -34,7 +34,7 @@ export default function MUNForm({
   handleSubmit,
 }: MUNFormProps) {
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 bg-white p-6 border border-gray-200 rounded-md shadow-sm">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         <div className="space-y-2">
           <label className="block text-sm font-semibold text-gray-700">
@@ -44,7 +44,7 @@ export default function MUNForm({
             type="text"
             value={country}
             onChange={(e) => setCountry(e.target.value)}
-            className="w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base bg-white border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 placeholder-gray-400 shadow-sm hover:shadow-md"
+            className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:border-gray-900 focus:outline-none placeholder-gray-400"
             placeholder="e.g., United States, Germany, Japan"
             required
             disabled={submitted || isLoading}
@@ -59,8 +59,8 @@ export default function MUNForm({
             type="text"
             value={committee}
             onChange={(e) => setCommittee(e.target.value)}
-            className="w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base bg-white border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 placeholder-gray-400 shadow-sm hover:shadow-md"
-            placeholder="e.g., Security Council, General Assembly"
+            className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:border-gray-900 focus:outline-none placeholder-gray-400"
+            placeholder="e.g., UNSC, General Assembly"
             disabled={submitted || isLoading}
           />
         </div>
@@ -74,7 +74,7 @@ export default function MUNForm({
           type="text"
           value={topic}
           onChange={(e) => setTopic(e.target.value)}
-          className="w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base bg-white border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 placeholder-gray-400 shadow-sm hover:shadow-md"
+          className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:border-gray-900 focus:outline-none placeholder-gray-400"
           placeholder="e.g., Climate Change, Nuclear Disarmament, Human Rights"
           required
           disabled={submitted || isLoading}
@@ -88,7 +88,7 @@ export default function MUNForm({
         <select
           value={type}
           onChange={(e) => setType(e.target.value)}
-          className="w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base bg-white border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-md appearance-none cursor-pointer"
+          className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:border-gray-900 focus:outline-none placeholder-gray-400"
           required
           disabled={submitted || isLoading}
         >
@@ -109,7 +109,7 @@ export default function MUNForm({
         <textarea
           value={context}
           onChange={(e) => setContext(e.target.value)}
-          className="w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base bg-white border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 placeholder-gray-400 shadow-sm hover:shadow-md resize-none"
+          className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:border-gray-900 focus:outline-none placeholder-gray-400 resize-none"
           placeholder="Provide any additional context, background information, or specific points you want to address..."
           rows={3}
           disabled={submitted || isLoading}
@@ -118,7 +118,7 @@ export default function MUNForm({
 
       <button
         type="submit"
-        className="w-full relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-4 sm:py-4 sm:px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg text-sm sm:text-base"
+        className="w-full relative overflow-hidden bg-[#00a7c6] text-white py-3 px-4 sm:py-4 sm:px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg text-sm sm:text-base"
         disabled={submitted || isLoading}
       >
         {isLoading ? (
@@ -128,7 +128,7 @@ export default function MUNForm({
           </div>
         ) : (
           <div className="flex items-center justify-center space-x-2">
-            <span>✨ Generate Diplomatic Response</span>
+            <span>Generate Diplomatic Response</span>
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-indigo-700 opacity-0 hover:opacity-100 transition-opacity duration-200"></div>

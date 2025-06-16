@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
+import ReactMarkdown from "react-markdown";
 
 interface MUNOutputProps {
   output: string;
@@ -95,7 +96,7 @@ export default function MUNOutput({ output, handleBack, country, topic, type }: 
       >
         <div className="prose prose-sm sm:prose-lg max-w-none">
           <div className="whitespace-pre-wrap text-gray-800 leading-relaxed text-sm sm:text-base">
-            {output}
+            <ReactMarkdown>{output}</ReactMarkdown>
           </div>
         </div>
       </div>
