@@ -16,9 +16,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // // MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/mun-assistant')
-  .then(() => console.log('MongoDB Connected'))
-  .catch(err => console.error('MongoDB Connection Error:', err));
+// mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/mun-assistant')
+//   .then(() => console.log('MongoDB Connected'))
+//   .catch(err => console.error('MongoDB Connection Error:', err));
 
 app.get('/',(req,res)=>{
   res.send("Backend is running!")
