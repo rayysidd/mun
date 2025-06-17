@@ -26,7 +26,7 @@ export default function Home(){
     }
 
     try {
-      const response = await fetch('https://mun-1igc.onrender.com', {
+      const response = await fetch('https://mun-1igc.onrender.com/api/chat/speech', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
