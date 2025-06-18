@@ -22,7 +22,7 @@ export default function Home(){
     //build context string
     let fullContext = context;
     if(committee){
-      fullContext = committee ? 'Committee: ${committee}. ${context}'.trim() : context;
+      fullContext = committee ? `Committee: ${committee}. ${context}`.trim() : context;
     }
 
     try {
@@ -53,10 +53,22 @@ export default function Home(){
 };
 const handleBack = () => {
     setSubmitted(false);
+    // Keep the output visible, don't clear it
+  };
+
+  const handleReset = () => {
+    // Reset all state to initial values
+    setCountry('');
+    setCommittee('');
+    setTopic('');
+    setType('');
+    setContext('');
     setOutput('');
+    setSubmitted(false);
+    setIsLoading(false);
   };
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
+    <div className="min-h-screen bg-stone-50 from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
       
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -65,100 +77,151 @@ const handleBack = () => {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-indigo-400/10 to-blue-400/10 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="relative z-10 min-h-screen p-3 sm:p-4 md:p-8 flex items-start justify-center">
-        <div className={`transition-all duration-700 ease-in-out ${
-          submitted 
-            ? 'w-full max-w-7xl flex flex-col lg:flex-row items-start space-y-0 lg:space-x-0' 
-            : 'w-full max-w-lg sm:max-w-2xl'
-        }`}>
-          
-          {/* Form Section */}
-          <div className={`bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl sm:rounded-3xl shadow-2xl transition-all duration-700 ${
-            submitted 
-              ? 'w-full lg:w-2/5 flex-shrink-0' 
-              : 'w-full'
-          } ${submitted ? 'transform scale-95 lg:scale-100' : ''}`}>
-            
-            {/* Header */}
-            <div className="text-center p-4 sm:p-6 lg:p-8 pb-4 sm:pb-6 border-b border-gray-100">
-              <div className="inline-flex items-center justify-center w-25 h-25 sm:w-20 sm:h-20 bg-white rounded-full mb-4 shadow-lg border border-gray-200">
+      {/* Fixed Navbar */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-white/20 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 sm:h-20">
+            {/* Logo and Brand */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center shadow-lg border border-gray-200">
                 <img
-                src="https://upload.wikimedia.org/wikipedia/commons/e/ee/UN_emblem_blue.svg"
-                alt="UN Logo"
-                className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
-              />
-            </div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-unifraktur text-gray-800 mb-2">
-                DiploMate
-              </h1>
-              <p className="text-gray-600 max-w-md mx-auto leading-relaxed text-sm sm:text-base px-2">
-                AI-powered diplomatic speech generator for Model UN conferences. 
-                Create compelling, country-specific responses in seconds.
-              </p>
-            </div>
-
-            {/* Form */}
-            <div className="p-4 sm:p-6 lg:p-8">
-              <MUNForm
-                country={country}
-                setCountry={setCountry}
-                committee={committee}
-                setCommittee={setCommittee}
-                topic={topic}
-                setTopic={setTopic}
-                type={type}
-                setType={setType}
-                context={context}
-                setContext={setContext}
-                submitted={submitted}
-                isLoading={isLoading}
-                handleSubmit={handleSubmit}
-              />
+                  src="https://upload.wikimedia.org/wikipedia/commons/e/ee/UN_emblem_blue.svg"
+                  alt="UN Logo"
+                  className="w-6 h-6 sm:w-7 sm:h-7 object-contain"
+                />
+              </div>
+              <div>
+                <h1 className="text-xl sm:text-2xl font-bold font-unifraktur text-gray-800">
+                  DiploMate
+                </h1>
+                <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">
+                  AI-powered MUN assistant
+                </p>
+              </div>
             </div>
 
-            {/* Features */}
-            {!submitted && (
-              <div className="px-4 sm:px-6 lg:px-8 pb-4 sm:pb-6 lg:pb-8">
-                <div className="grid grid-cols-2 gap-2 sm:gap-4 pt-4 sm:pt-6 border-t border-gray-100">
-                  <div className="text-center p-2 sm:p-4 bg-blue-50 rounded-lg sm:rounded-xl">
-                    <div className="text-lg sm:text-2xl mb-1 sm:mb-2">⚡</div>
-                    <div className="text-xs sm:text-sm font-medium text-gray-700">Instant Generation</div>
-                    <div className="text-xs text-gray-500 mt-1 hidden sm:block">AI-powered responses in seconds</div>
+            {/* Navigation Actions */}
+            <div className="flex items-center gap-4">
+              {output && (
+                <>
+                  
+                  <button
+                    onClick={handleReset}
+                    className="px-4 py-2 sm:px-6 sm:py-2.5 bg-amber-100 hover:bg-stone-100 text-black rounded-xl font-medium transition-colors shadow-lg text-sm sm:text-base"
+                  >
+                    Clear Speech
+                  </button>
+                </>
+              )}
+              <div className="hidden md:flex items-center gap-2 text-sm text-gray-600">
+                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                <span>Ready to generate</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Main content with top padding to account for fixed header */}
+      <div className="relative z-10 pt-24 sm:pt-28 pb-8 px-3 sm:px-4 md:px-8">
+        {/* Header */}
+        <div className="text-center mb-8">
+          
+        </div>
+
+        {/* Main Content Grid */}
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+            
+            {/* Left Column - Form */}
+            <div className="bg-amber-50/80 backdrop-blur-xl border border-white/20 rounded-2xl sm:rounded-3xl shadow-2xl h-fit">
+              <div className="p-6 sm:p-8">
+                <div className="border-b border-gray-200 pb-4 mb-6">
+                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-2">
+                    {output ? 'Edit Speech Parameters' : 'Generate Your Speech'}
+                  </h2>
+                  <p className="text-sm sm:text-base text-gray-600">
+                    {output ? 'Modify settings and generate new content' : 'Fill in the details below to create your diplomatic response'}
+                  </p>
+                </div>
+                
+                <MUNForm
+                  country={country}
+                  setCountry={setCountry}
+                  committee={committee}
+                  setCommittee={setCommittee}
+                  topic={topic}
+                  setTopic={setTopic}
+                  type={type}
+                  setType={setType}
+                  context={context}
+                  setContext={setContext}
+                  submitted={submitted}
+                  isLoading={isLoading}
+                  handleSubmit={handleSubmit}
+                />
+              </div>
+            </div>
+
+            {/* Right Column - Output (always show if we have output) */}
+            <div className="transition-all duration-700 ease-in-out">
+              {output ? (
+                /* Output Section - Show whenever we have output */
+                <MUNOutput 
+                  output={output} 
+                  handleBack={handleBack}
+                  country={country}
+                  topic={topic}
+                  type={type}
+                />
+              ) : (
+                /* Features Section - Only show when no output exists */
+                <div className="bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8">
+                  <div className="border-b border-gray-200 pb-4 mb-6">
+                    <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-2">Why Choose DiploMate?</h2>
+                    <p className="text-sm sm:text-base text-gray-600">Powerful features designed for MUN success</p>
                   </div>
-                  <div className="text-center p-2 sm:p-4 bg-indigo-50 rounded-lg sm:rounded-xl">
-                    <div className="text-lg sm:text-2xl mb-1 sm:mb-2">🎯</div>
-                    <div className="text-xs sm:text-sm font-medium text-gray-700">Country-Specific</div>
-                    <div className="text-xs text-gray-500 mt-1 hidden sm:block">Tailored to your nations stance</div>
-                  </div>
-                  <div className="text-center p-2 sm:p-4 bg-purple-50 rounded-lg sm:rounded-xl">
-                    <div className="text-lg sm:text-2xl mb-1 sm:mb-2">📝</div>
-                    <div className="text-xs sm:text-sm font-medium text-gray-700">Multiple Formats</div>
-                    <div className="text-xs text-gray-500 mt-1 hidden sm:block">Speeches, papers, amendments</div>
-                  </div>
-                  <div className="text-center p-2 sm:p-4 bg-green-50 rounded-lg sm:rounded-xl">
-                    <div className="text-lg sm:text-2xl mb-1 sm:mb-2">🌍</div>
-                    <div className="text-xs sm:text-sm font-medium text-gray-700">Global Coverage</div>
-                    <div className="text-xs text-gray-500 mt-1 hidden sm:block">All UN member states supported</div>
+                  
+                  <div className="space-y-6">
+                    <div className="flex items-start gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                      <div className="text-3xl">⚡</div>
+                      <div>
+                        <h3 className="font-semibold text-gray-800 mb-1">Instant Generation</h3>
+                        <p className="text-sm text-gray-600">AI-powered responses generated in seconds, saving you valuable preparation time during committee sessions.</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-4 p-4 bg-indigo-50 rounded-xl border border-indigo-100">
+                      <div className="text-3xl">🎯</div>
+                      <div>
+                        <h3 className="font-semibold text-gray-800 mb-1">Country-Specific Positioning</h3>
+                        <p className="text-sm text-gray-600">Tailored responses that reflect your assigned country's real diplomatic stance and foreign policy priorities.</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-4 p-4 bg-purple-50 rounded-xl border border-purple-100">
+                      <div className="text-3xl">📝</div>
+                      <div>
+                        <h3 className="font-semibold text-gray-800 mb-1">Multiple Document Types</h3>
+                        <p className="text-sm text-gray-600">Generate opening speeches, position papers, draft resolutions, amendments, and working papers with ease.</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-4 p-4 bg-green-50 rounded-xl border border-green-100">
+                      <div className="text-3xl">🌍</div>
+                      <div>
+                        <h3 className="font-semibold text-gray-800 mb-1">Global Coverage</h3>
+                        <p className="text-sm text-gray-600">Comprehensive support for all 193 UN member states with accurate diplomatic language and terminology.</p>
+                      </div>
+                    </div>                   
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-
-          {/* Output Section */}
-          {submitted && (
-            <MUNOutput 
-              output={output} 
-              handleBack={handleBack}
-              country={country}
-              topic={topic}
-              type={type}
-            />
-          )}
         </div>
       </div>
     </div>
   );
 
 }
-  

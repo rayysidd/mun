@@ -91,7 +91,7 @@ export default function MUNOutput({ output, handleBack, country, topic, type }: 
       <div
         ref={outputRef}
         tabIndex={-1}
-        className="bg-white flex-1 p-4 sm:p-8 rounded-b-2xl shadow-lg overflow-auto max-h-[50vh] sm:max-h-[70vh] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+        className="bg-amber-50 flex-1 p-4 sm:p-8 rounded-b-2xl shadow-lg overflow-auto max-h-[50vh] sm:max-h-[70vh] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
         aria-label="MUN Research Output"
       >
         <div className="prose prose-sm sm:prose-lg max-w-none">

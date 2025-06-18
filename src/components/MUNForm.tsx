@@ -34,7 +34,7 @@ export default function MUNForm({
   handleSubmit,
 }: MUNFormProps) {
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 bg-white p-6 border border-gray-200 rounded-md shadow-sm">
+    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 bg-stone-100 p-6 border border-gray-200 rounded-md shadow-sm">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         <div className="space-y-2">
           <label className="block text-sm font-semibold text-gray-700">
@@ -118,7 +118,7 @@ export default function MUNForm({
 
       <button
         type="submit"
-        className="w-full relative overflow-hidden bg-[#00a7c6] text-white py-3 px-4 sm:py-4 sm:px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg text-sm sm:text-base"
+        className="w-full relative overflow-hidden bg-[#154360] text-white py-3 px-4 sm:py-4 sm:px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg text-sm sm:text-base"
         disabled={submitted || isLoading}
       >
         {isLoading ? (
