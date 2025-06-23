@@ -4,7 +4,7 @@ Check it out here : https://diplomate.vercel.app/
 
 ### 📌 Overview
 
-**DiploMatet** is an AI-powered research and speech-generation tool built to support Model United Nations delegates. It helps users craft committee- and agenda-specific speeches, anticipate rebuttals, and analyze diplomatic stances — all tailored to the delegate's country.
+**DiploMate** is an AI-powered research and speech-generation tool built to support Model United Nations delegates. It helps users craft committee- and agenda-specific speeches, anticipate rebuttals, and analyze diplomatic stances — all tailored to the delegate's country.
 
 > ✅ Core AI functionality is implemented. UI and dashboard features are currently under development.
 
