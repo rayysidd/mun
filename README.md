@@ -4,7 +4,7 @@ Check it out here : https://diplomate.vercel.app/
 
 ### 📌 Overview
 
-**MUN Assistant** is an AI-powered research and speech-generation tool built to support Model United Nations delegates. It helps users craft committee- and agenda-specific speeches, anticipate rebuttals, and analyze diplomatic stances — all tailored to the delegate's country.
+**DiploMatet** is an AI-powered research and speech-generation tool built to support Model United Nations delegates. It helps users craft committee- and agenda-specific speeches, anticipate rebuttals, and analyze diplomatic stances — all tailored to the delegate's country.
 
 > ✅ Core AI functionality is implemented. UI and dashboard features are currently under development.
 
@@ -26,7 +26,7 @@ Check it out here : https://diplomate.vercel.app/
 * 🧾 Editable dashboard for saved content
 * 🌐 Real-time data integration (scraping or API-based)
 * 📱 Mobile app with sync
-
+* 🧠 RAG (Retrieval-Augmented Generation) to ground AI responses in current global events and UN sources
 ---
 
 ### 🧰 Tech Stack
