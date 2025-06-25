@@ -195,7 +195,7 @@ const handleBack = () => {
                       <div className="text-3xl">🎯</div>
                       <div>
                         <h3 className="font-semibold text-gray-800 mb-1">Country-Specific Positioning</h3>
-                        <p className="text-sm text-gray-600">Tailored responses that reflect your assigned country's real diplomatic stance and foreign policy priorities.</p>
+                        <p className="text-sm text-gray-600">Tailored responses that reflect your assigned country&apos;s real diplomatic stance and foreign policy priorities.</p>
                       </div>
                     </div>
                     
