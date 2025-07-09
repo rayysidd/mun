@@ -1,11 +1,14 @@
 'use client';
 
-import React,{useState} from "react";
+import React,{useState, useEffect} from "react";
+import { useRouter } from 'next/navigation';
+import { isAuthenticated } from '@/utils/auth';
 import MUNForm from "@/components/MUNForm";
 import MUNOutput from "@/components/MUNOutput";
 // import { headers } from "next/headers";
 
 export default function Home(){
+  const router = useRouter();
   const [country,setCountry] = useState('');
   const [committee,setCommittee] = useState('');
   const [topic, setTopic] = useState('');
@@ -14,43 +17,103 @@ export default function Home(){
   const [output, setOutput] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [username, setUsername] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [briefMode, setBriefMode] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent)=> {
-    e.preventDefault();
-    setIsLoading(true);
+  // Check authentication status on component mount
+  useEffect(() => {
+  const checkAuth = () => {
+    if (!isAuthenticated()) {
+      router.push('/auth'); // Redirect if not logged in
+    } else {
+      setIsLoggedIn(true);
 
-    //build context string
-    let fullContext = context;
-    if(committee){
-      fullContext = committee ? `Committee: ${committee}. ${context}`.trim() : context;
+      const userData = localStorage.getItem('user');
+      try {
+        if (userData && userData !== 'undefined') {
+          const parsedUser = JSON.parse(userData);
+          setUsername(parsedUser.username || 'User');
+        } else {
+          console.warn("No valid user data in localStorage.");
+          setUsername('User');
+        }
+      } catch (error) {
+        console.error("Failed to parse user data from localStorage:", error);
+        setUsername('User');
+      }
+
+      setLoading(false);
     }
+  };
 
-    try {
-      const response = await fetch('http://localhost:5001/api/chat/speech', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          topic: topic,
-          country: country,
-          type: type,
-          committee:committee,
-          context: fullContext
-        }),
-      });
+  checkAuth();
+}, [router]);
 
-      if(!response.ok) throw new Error('netwrok error');
 
-      const data = await response.json();
-      setOutput(data.speech);
-      setSubmitted(true);
-  }catch(error){
-    console.error('Fetch error:',error);
+  const handleLogout = () => {
+    // Clear user data from localStorage
+    localStorage.removeItem('user');
+    localStorage.removeItem('authToken');
+    
+    // Update state
+    setIsLoggedIn(false);
+    setUsername('');
+    
+    // Redirect to auth page
+    router.push('/auth');
+  };
+
+  const handleProfile = () => {
+    router.push('/profile');
+  };
+
+  const handleLogin = () => {
+    router.push('/auth');
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsLoading(true);
+
+  // Build enhanced fullContext
+  const fullContext = [
+    committee && `Committee: ${committee}.`,
+    briefMode && `Generate a quick update instead of a formal speech.`,
+    context
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .trim();
+
+  try {
+    const response = await fetch('http://localhost:5001/api/chat/speech', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        topic: topic,
+        country: country,
+        type: type,
+        committee: committee,
+        context: fullContext
+      }),
+    });
+
+    if (!response.ok) throw new Error('network error');
+
+    const data = await response.json();
+    setOutput(data.speech);
+    setSubmitted(true);
+  } catch (error) {
+    console.error('Fetch error:', error);
     setOutput('Sorry, something went wrong. Please try again later.');
     setSubmitted(true);
-  }finally {
-      setIsLoading(false);
-    }
+  } finally {
+    setIsLoading(false);
+  }
 };
+
 const handleBack = () => {
     setSubmitted(false);
     // Keep the output visible, don't clear it
@@ -67,6 +130,26 @@ const handleBack = () => {
     setSubmitted(false);
     setIsLoading(false);
   };
+
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-stone-50 flex items-center justify-center">
+        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full mx-4">
+          <div className="animate-pulse">
+            <div className="flex items-center justify-center mb-4">
+              <div className="w-16 h-16 bg-gray-200 rounded-full"></div>
+            </div>
+            <div className="space-y-3">
+              <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-stone-50 from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
       
@@ -104,7 +187,6 @@ const handleBack = () => {
             <div className="flex items-center gap-4">
               {output && (
                 <>
-                  
                   <button
                     onClick={handleReset}
                     className="px-4 py-2 sm:px-6 sm:py-2.5 bg-amber-100 hover:bg-stone-100 text-black rounded-xl font-medium transition-colors shadow-lg text-sm sm:text-base"
@@ -113,6 +195,56 @@ const handleBack = () => {
                   </button>
                 </>
               )}
+              
+              {/* Authentication Section */}
+              {isLoggedIn ? (
+                <div className="flex items-center gap-3">
+                  {/* User Info */}
+                  <div className="hidden sm:flex items-center gap-2 text-sm text-gray-600">
+                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                      {username.charAt(0).toUpperCase()}
+                    </div>
+                    <span>Hi, {username}</span>
+                  </div>
+                  
+                  {/* Profile Button */}
+                  <button
+                    onClick={handleProfile}
+                    className="px-4 py-2 sm:px-5 sm:py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors shadow-lg text-sm sm:text-base flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <span className="hidden sm:inline">Profile</span>
+                  </button>
+                  
+                  {/* Logout Button */}
+                  <button
+                    onClick={handleLogout}
+                    className="px-4 py-2 sm:px-5 sm:py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-colors shadow-lg text-sm sm:text-base flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    <span className="hidden sm:inline">Logout</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3">
+                  {/* Login Button */}
+                  <button
+                    onClick={handleLogin}
+                    className="px-4 py-2 sm:px-6 sm:py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors shadow-lg text-sm sm:text-base flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    <span>Login</span>
+                  </button>
+                </div>
+              )}
+
+              {/* Status Indicator */}
               <div className="hidden md:flex items-center gap-2 text-sm text-gray-600">
                 <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                 <span>Ready to generate</span>
@@ -156,10 +288,13 @@ const handleBack = () => {
                   setType={setType}
                   context={context}
                   setContext={setContext}
+                  isBriefMode={briefMode}
+                  setIsBriefMode={setBriefMode}
                   submitted={submitted}
                   isLoading={isLoading}
                   handleSubmit={handleSubmit}
                 />
+
               </div>
             </div>
 

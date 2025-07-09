@@ -1,4 +1,5 @@
 const User = require('../models/userModel');
+const Speech=require('../models/speechModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -28,6 +29,7 @@ const registerUser = async (req, res) => {
       }
     });
   } catch (error) {
+    console.error("Register Error:", error.message, error.stack);
     res.status(500).json({ error: 'Server error' });
   }
 };
@@ -60,4 +62,14 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser };
+const saveSpeech = async(req,res)=>{
+  try{
+    const{content} = req.body;
+    const speech = await Speech.create({ content, userId: req.user.id });
+    res.status(201).json(speech);
+  }catch(err){
+    console.log(err);
+    res.status(500).json({ error: 'Could not save speech' });
+  }
+};
+module.exports = { registerUser, loginUser,saveSpeech };

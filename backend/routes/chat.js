@@ -41,7 +41,7 @@ router.post('/speech', async (req, res) => {
     const prompt = `As a representative of ${country}, please generate a ${type} speech for the following MUN topic: ${topic}
     Context: ${context}
     The speech should reflect the country's position on the issue.`;
-
+    console.log(prompt);
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const speech = response.text();

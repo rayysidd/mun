@@ -13,6 +13,8 @@ interface MUNFormProps {
   setType: React.Dispatch<React.SetStateAction<string>>;
   context: string;
   setContext: React.Dispatch<React.SetStateAction<string>>;
+  isBriefMode: boolean;
+  setIsBriefMode: React.Dispatch<React.SetStateAction<boolean>>;
   submitted: boolean;
   isLoading: boolean;
   handleSubmit: (e: React.FormEvent) => void;
@@ -29,13 +31,19 @@ export default function MUNForm({
   setType,
   context,
   setContext,
+  isBriefMode,
+  setIsBriefMode,
   submitted,
   isLoading,
   handleSubmit,
 }: MUNFormProps) {
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 bg-stone-100 p-6 border border-gray-200 rounded-md shadow-sm">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4 sm:space-y-5 bg-stone-100 p-6 border border-gray-200 rounded-md shadow-sm"
+    >
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+        {/* Country */}
         <div className="space-y-2">
           <label className="block text-sm font-semibold text-gray-700">
             Country <span className="text-red-500">*</span>
@@ -51,6 +59,7 @@ export default function MUNForm({
           />
         </div>
 
+        {/* Committee */}
         <div className="space-y-2">
           <label className="block text-sm font-semibold text-gray-700">
             Committee
@@ -66,6 +75,7 @@ export default function MUNForm({
         </div>
       </div>
 
+      {/* Topic */}
       <div className="space-y-2">
         <label className="block text-sm font-semibold text-gray-700">
           Topic <span className="text-red-500">*</span>
@@ -81,9 +91,10 @@ export default function MUNForm({
         />
       </div>
 
+      {/* Type */}
       <div className="space-y-2">
         <label className="block text-sm font-semibold text-gray-700">
-          Speech Type <span className="text-red-500">*</span>
+          Content Type <span className="text-red-500">*</span>
         </label>
         <select
           value={type}
@@ -92,7 +103,7 @@ export default function MUNForm({
           required
           disabled={submitted || isLoading}
         >
-          <option value="">Select speech type...</option>
+          <option value="">Select Content type...</option>
           <option value="opening statement">🎤 Opening Statement</option>
           <option value="position paper">📄 Position Paper</option>
           <option value="debate speech">💬 Debate Speech</option>
@@ -102,6 +113,18 @@ export default function MUNForm({
         </select>
       </div>
 
+      {/* Brief Mode */}
+      <label className="flex items-center gap-2 mt-4">
+        <input
+          type="checkbox"
+          checked={isBriefMode}
+          onChange={() => setIsBriefMode(!isBriefMode)}
+          disabled={submitted || isLoading}
+        />
+        <span className="text-sm">Generate quick update instead of formal speech</span>
+      </label>
+
+      {/* Context */}
       <div className="space-y-2">
         <label className="block text-sm font-semibold text-gray-700">
           Additional Context
@@ -116,6 +139,7 @@ export default function MUNForm({
         />
       </div>
 
+      {/* Submit Button */}
       <button
         type="submit"
         className="w-full relative overflow-hidden bg-[#154360] text-white py-3 px-4 sm:py-4 sm:px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg text-sm sm:text-base"

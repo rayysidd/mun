@@ -41,6 +41,32 @@ export default function MUNOutput({ output, handleBack, country, topic, type }: 
     document.body.removeChild(element);
   };
 
+  const handleSave = async () =>{
+    const token = localStorage.getItem('authToken');
+    console.log(token);
+    if(!token){
+      alert('You need to be logged in to save speeches');
+      return;
+    }
+
+    try{
+      const response = await fetch('http://localhost:5001/api/users/save',{
+        method :'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ${token}',
+        },
+        body: JSON.stringify({content: output}),
+      });
+      if (!response.ok) throw new Error('Failed to save speech');
+
+      const data = await response.json();
+      alert('Speech saved successfully!');
+    }catch(err){
+      console.error('Error saving speech:', err);
+      alert('Error saving speech. Try again later.');
+    }
+  };
   return (
     <div className="flex-1 ml-0 sm:ml-8 mt-6 sm:mt-0 flex flex-col animate-in slide-in-from-right duration-500">
       {/* Header */}
@@ -60,28 +86,21 @@ export default function MUNOutput({ output, handleBack, country, topic, type }: 
             </div>
           </div>
           <div className="flex space-x-2 sm:space-x-3">
-            <button
-              onClick={handleCopy}
-              className="flex items-center space-x-1 sm:space-x-2 px-3 py-2 sm:px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-all duration-200 font-medium shadow-sm hover:shadow-md text-xs sm:text-sm"
-            >
-              {copied ? (
-                <>
-                  <span className="text-green-600">✓</span>
-                  <span className="text-green-600 hidden sm:inline">Copied!</span>
-                </>
-              ) : (
-                <>
-                  <span>📋</span>
-                  <span className="hidden sm:inline">Copy</span>
-                </>
-              )}
-            </button>
+            
             <button
               onClick={handleDownload}
               className="flex items-center space-x-1 sm:space-x-2 px-3 py-2 sm:px-4 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-xl transition-all duration-200 font-medium shadow-sm hover:shadow-md text-xs sm:text-sm"
             >
               <span>💾</span>
               <span className="hidden sm:inline">Download</span>
+            </button>
+
+            <button
+              onClick={handleSave}
+              className="flex items-center space-x-1 sm:space-x-2 px-3 py-2 sm:px-4 bg-teal-100 hover:bg-teal-200 text-teal-700 rounded-xl transition-all duration-200 font-medium shadow-sm hover:shadow-md text-xs sm:text-sm"
+            >
+              <span>💾</span>
+              <span className="hidden sm:inline">Save</span>
             </button>
           </div>
         </div>

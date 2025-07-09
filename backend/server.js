@@ -28,6 +28,6 @@ app.get('/',(req,res)=>{
 // // Routes
 app.use('/api/chat', require('./routes/chat'));
 app.use('/api/users', userRoutes);
-
+// app.use('/api/users', require('./routes/userRoutes'));
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`)); 
