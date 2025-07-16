@@ -56,7 +56,7 @@ export default function MUNOutput({ output, handleBack, country, topic, type }: 
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({content: output}),
+        body: JSON.stringify({content: output,topic:topic,country:country}),
       });
       if (!response.ok) throw new Error('Failed to save speech');
 

@@ -64,8 +64,12 @@ const loginUser = async (req, res) => {
 
 const saveSpeech = async(req,res)=>{
   try{
-    const{content} = req.body;
-    const speech = await Speech.create({ content, userId: req.user.id });
+    const{content,topic,country} = req.body;
+    // NEW: Add validation for the new fields
+    if (!content || !topic || !country) {
+      return res.status(400).json({ error: 'Content, topic, and country are required.' });
+    }
+    const speech = await Speech.create({ content,topic,country, userId: req.user.id });
     res.status(201).json(speech);
   }catch(err){
     console.log(err);
