@@ -1,7 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import axios from "axios";
-import Image from "next/image"; // Import the Next.js Image component
+// FIX: Import AxiosError for type-safe error handling
+import axios, { AxiosError } from "axios";
+import Image from "next/image";
 
 const AuthForms = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -10,14 +11,14 @@ const AuthForms = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  // FIX: Added type for the event parameter 'e'
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-    if (errors[name]) {
+    // FIX: Assert 'name' as a key of the 'errors' object to satisfy TypeScript's strict index signature rules.
+    if (errors[name as keyof typeof errors]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
@@ -38,7 +39,6 @@ const AuthForms = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // FIX: Added type for the event parameter 'e'
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage("");
@@ -61,6 +61,7 @@ const AuthForms = () => {
       }, 1200);
     } catch (error) {
       console.error(error);
+      // FIX: Type-safe error handling without using 'any'
       let errMsg = "Something went wrong. Please try again.";
       if (axios.isAxiosError(error)) {
         // Now TypeScript knows 'error' is an AxiosError
