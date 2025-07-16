@@ -61,8 +61,14 @@ const AuthForms = () => {
       }, 1200);
     } catch (error) {
       console.error(error);
-      const errMsg = (error as any).response?.data?.error || "Something went wrong. Please try again.";
-      setMessage(errMsg);
+      let errMsg = "Something went wrong. Please try again.";
+      if (axios.isAxiosError(error)) {
+        // Now TypeScript knows 'error' is an AxiosError
+        const axiosError = error as AxiosError<{ error: string }>;
+        if (axiosError.response && axiosError.response.data && axiosError.response.data.error) {
+          errMsg = axiosError.response.data.error;
+        }
+      }
     } finally {
       setIsLoading(false);
     }
