@@ -49,7 +49,7 @@ const ProfilePage = () => {
         setUsername(JSON.parse(userData).username || 'User');
       }
       try {
-        const response = await fetch('http://localhost:5001/api/users/speeches', {
+        const response = await fetch('https://mun-1igc.onrender.com/api/users/speeches', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!response.ok) {
