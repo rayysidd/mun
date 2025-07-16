@@ -13,7 +13,7 @@ interface MUNOutputProps {
 
 export default function MUNOutput({ output, handleBack, country, topic, type }: MUNOutputProps) {
   const outputRef = useRef<HTMLDivElement>(null);
-  const [copied, setCopied] = useState(false);
+  // const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (outputRef.current) {
