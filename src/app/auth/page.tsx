@@ -69,6 +69,7 @@ const AuthForms = () => {
           errMsg = axiosError.response.data.error;
         }
       }
+      setMessage(errMsg);
     } finally {
       setIsLoading(false);
     }
