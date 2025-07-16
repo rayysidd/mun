@@ -290,7 +290,7 @@ const AuthForms = () => {
                       className="text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors duration-200 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isLogin 
-                        ? "Don't have an account? Create one here" 
+                        ? "Don&apos;t have an account? Create one here" 
                         : "Already have an account? Sign in instead"
                       }
                     </button>
