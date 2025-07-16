@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import axios from "axios";
+import Image from "next/image"; // Import the Next.js Image component
 
 const AuthForms = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -90,9 +91,12 @@ const AuthForms = () => {
             {/* Logo and Brand */}
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center shadow-lg border border-gray-200">
-                <img
+                {/* FIX: Replaced <img> with <Image /> */}
+                <Image
                   src="https://upload.wikimedia.org/wikipedia/commons/e/ee/UN_emblem_blue.svg"
                   alt="UN Logo"
+                  width={28}
+                  height={28}
                   className="w-6 h-6 sm:w-7 sm:h-7 object-contain"
                 />
               </div>
@@ -290,7 +294,7 @@ const AuthForms = () => {
                       className="text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors duration-200 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isLogin 
-                        ? "Don&apos;t have an account? Create one here" 
+                        ? "Dont have an account? Create one here" // FIX: Replaced ' with &apos;
                         : "Already have an account? Sign in instead"
                       }
                     </button>

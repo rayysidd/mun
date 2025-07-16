@@ -13,7 +13,8 @@ interface MUNOutputProps {
 
 export default function MUNOutput({ output, handleBack, country, topic, type }: MUNOutputProps) {
   const outputRef = useRef<HTMLDivElement>(null);
-  // const [copied, setCopied] = useState(false);
+  // FIX: Re-added the 'copied' state to be used with the new copy button.
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (outputRef.current) {
@@ -25,7 +26,7 @@ export default function MUNOutput({ output, handleBack, country, topic, type }: 
     try {
       await navigator.clipboard.writeText(output);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setCopied(false), 2000); // Hide "Copied!" message after 2 seconds
     } catch (err) {
       console.error('Failed to copy text: ', err);
     }
@@ -43,7 +44,6 @@ export default function MUNOutput({ output, handleBack, country, topic, type }: 
 
   const handleSave = async () =>{
     const token = localStorage.getItem('authToken');
-    console.log(token);
     if(!token){
       alert('You need to be logged in to save speeches');
       return;
@@ -60,7 +60,8 @@ export default function MUNOutput({ output, handleBack, country, topic, type }: 
       });
       if (!response.ok) throw new Error('Failed to save speech');
 
-      const data = await response.json();
+      // FIX: Removed the unused 'data' variable.
+      await response.json(); 
       alert('Speech saved successfully!');
     }catch(err){
       console.error('Error saving speech:', err);
@@ -86,6 +87,14 @@ export default function MUNOutput({ output, handleBack, country, topic, type }: 
             </div>
           </div>
           <div className="flex space-x-2 sm:space-x-3">
+            
+            {/* NEW: Added a Copy button */}
+            <button
+              onClick={handleCopy}
+              className="flex items-center space-x-1 sm:space-x-2 px-3 py-2 sm:px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-all duration-200 font-medium shadow-sm hover:shadow-md text-xs sm:text-sm"
+            >
+              <span>{copied ? '✅ Copied!' : '📋 Copy'}</span>
+            </button>
             
             <button
               onClick={handleDownload}
