@@ -1,11 +1,11 @@
 'use client';
 
-import React,{useState, useEffect} from "react";
+import React,{useState, useEffect, useCallback} from "react";
 import { useRouter } from 'next/navigation';
 import { isAuthenticated } from '@/utils/auth';
 import MUNForm from "@/components/MUNForm";
 import MUNOutput from "@/components/MUNOutput";
-// import { headers } from "next/headers";
+import Image from "next/image";
 
 export default function Home(){
   const router = useRouter();
@@ -22,48 +22,39 @@ export default function Home(){
   const [loading, setLoading] = useState(true);
   const [briefMode, setBriefMode] = useState(false);
 
-  // Check authentication status on component mount
-  useEffect(() => {
-  const checkAuth = () => {
-    if (!isAuthenticated()) {
-      router.push('/auth'); // Redirect if not logged in
-    } else {
-      setIsLoggedIn(true);
-
-      const userData = localStorage.getItem('user');
-      try {
-        if (userData && userData !== 'undefined') {
-          const parsedUser = JSON.parse(userData);
-          setUsername(parsedUser.username || 'User');
-        } else {
-          console.warn("No valid user data in localStorage.");
-          setUsername('User');
-        }
-      } catch (error) {
-        console.error("Failed to parse user data from localStorage:", error);
-        setUsername('User');
-      }
-
-      setLoading(false);
-    }
-  };
-
-  checkAuth();
-}, [router]);
-
-
-  const handleLogout = () => {
-    // Clear user data from localStorage
+  const handleLogout = useCallback(() => {
     localStorage.removeItem('user');
     localStorage.removeItem('authToken');
-    
-    // Update state
     setIsLoggedIn(false);
     setUsername('');
-    
-    // Redirect to auth page
     router.push('/auth');
-  };
+  }, [router]);
+
+  useEffect(() => {
+    const checkAuth = () => {
+      if (!isAuthenticated()) {
+        router.push('/auth');
+      } else {
+        setIsLoggedIn(true);
+        const userData = localStorage.getItem('user');
+        try {
+          if (userData && userData !== 'undefined') {
+            const parsedUser = JSON.parse(userData);
+            setUsername(parsedUser.username || 'User');
+          } else {
+            console.warn("No valid user data in localStorage.");
+            setUsername('User');
+          }
+        } catch (error) {
+          console.error("Failed to parse user data from localStorage:", error);
+          setUsername('User');
+        }
+        setLoading(false);
+      }
+    };
+    checkAuth();
+  }, [router]);
+
 
   const handleProfile = () => {
     router.push('/profile');
@@ -74,53 +65,50 @@ export default function Home(){
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setIsLoading(true);
+    e.preventDefault();
+    setIsLoading(true);
 
-  // Build enhanced fullContext
-  const fullContext = [
-    committee && `Committee: ${committee}.`,
-    briefMode && `Generate a quick update instead of a formal speech.`,
-    context
-  ]
-    .filter(Boolean)
-    .join(' ')
-    .trim();
+    const fullContext = [
+      committee && `Committee: ${committee}.`,
+      briefMode && `Generate a quick update instead of a formal speech.`,
+      context
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .trim();
 
-  try {
-    const response = await fetch('https://mun-1igc.onrender.com/api/chat/speech', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        topic: topic,
-        country: country,
-        type: type,
-        committee: committee,
-        context: fullContext
-      }),
-    });
+    try {
+      const response = await fetch('https://mun-1igc.onrender.com/api/chat/speech', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          topic: topic,
+          country: country,
+          type: type,
+          committee: committee,
+          context: fullContext
+        }),
+      });
 
-    if (!response.ok) throw new Error('network error');
+      if (!response.ok) throw new Error('network error');
 
-    const data = await response.json();
-    setOutput(data.speech);
-    setSubmitted(true);
-  } catch (error) {
-    console.error('Fetch error:', error);
-    setOutput('Sorry, something went wrong. Please try again later.');
-    setSubmitted(true);
-  } finally {
-    setIsLoading(false);
-  }
-};
+      const data = await response.json();
+      setOutput(data.speech);
+      setSubmitted(true);
+    } catch (error) {
+      console.error('Fetch error:', error);
+      setOutput('Sorry, something went wrong. Please try again later.');
+      setSubmitted(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-const handleBack = () => {
+  const handleBack = () => {
     setSubmitted(false);
-    // Keep the output visible, don't clear it
   };
 
   const handleReset = () => {
-    // Reset all state to initial values
     setCountry('');
     setCommittee('');
     setTopic('');
@@ -131,7 +119,6 @@ const handleBack = () => {
     setIsLoading(false);
   };
 
-  // Show loading state while checking authentication
   if (loading) {
     return (
       <div className="min-h-screen bg-stone-50 flex items-center justify-center">
@@ -153,23 +140,22 @@ const handleBack = () => {
   return (
     <div className="min-h-screen bg-stone-50 from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
       
-      {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-indigo-400/10 to-blue-400/10 rounded-full blur-3xl"></div>
       </div>
 
-      {/* Fixed Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-white/20 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-20">
-            {/* Logo and Brand */}
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center shadow-lg border border-gray-200">
-                <img
+                <Image
                   src="https://upload.wikimedia.org/wikipedia/commons/e/ee/UN_emblem_blue.svg"
                   alt="UN Logo"
+                  width={28}
+                  height={28}
                   className="w-6 h-6 sm:w-7 sm:h-7 object-contain"
                 />
               </div>
@@ -183,7 +169,6 @@ const handleBack = () => {
               </div>
             </div>
 
-            {/* Navigation Actions */}
             <div className="flex items-center gap-4">
               {output && (
                 <>
@@ -196,10 +181,8 @@ const handleBack = () => {
                 </>
               )}
               
-              {/* Authentication Section */}
               {isLoggedIn ? (
                 <div className="flex items-center gap-3">
-                  {/* User Info */}
                   <div className="hidden sm:flex items-center gap-2 text-sm text-gray-600">
                     <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
                       {username.charAt(0).toUpperCase()}
@@ -207,7 +190,6 @@ const handleBack = () => {
                     <span>Hi, {username}</span>
                   </div>
                   
-                  {/* Profile Button */}
                   <button
                     onClick={handleProfile}
                     className="px-4 py-2 sm:px-5 sm:py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors shadow-lg text-sm sm:text-base flex items-center gap-2"
@@ -218,7 +200,6 @@ const handleBack = () => {
                     <span className="hidden sm:inline">Profile</span>
                   </button>
                   
-                  {/* Logout Button */}
                   <button
                     onClick={handleLogout}
                     className="px-4 py-2 sm:px-5 sm:py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-colors shadow-lg text-sm sm:text-base flex items-center gap-2"
@@ -231,7 +212,6 @@ const handleBack = () => {
                 </div>
               ) : (
                 <div className="flex items-center gap-3">
-                  {/* Login Button */}
                   <button
                     onClick={handleLogin}
                     className="px-4 py-2 sm:px-6 sm:py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors shadow-lg text-sm sm:text-base flex items-center gap-2"
@@ -244,7 +224,6 @@ const handleBack = () => {
                 </div>
               )}
 
-              {/* Status Indicator */}
               <div className="hidden md:flex items-center gap-2 text-sm text-gray-600">
                 <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                 <span>Ready to generate</span>
@@ -254,18 +233,10 @@ const handleBack = () => {
         </div>
       </nav>
 
-      {/* Main content with top padding to account for fixed header */}
       <div className="relative z-10 pt-24 sm:pt-28 pb-8 px-3 sm:px-4 md:px-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          
-        </div>
-
-        {/* Main Content Grid */}
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
             
-            {/* Left Column - Form */}
             <div className="bg-amber-50/80 backdrop-blur-xl border border-white/20 rounded-2xl sm:rounded-3xl shadow-2xl h-fit">
               <div className="p-6 sm:p-8">
                 <div className="border-b border-gray-200 pb-4 mb-6">
@@ -298,10 +269,8 @@ const handleBack = () => {
               </div>
             </div>
 
-            {/* Right Column - Output (always show if we have output) */}
             <div className="transition-all duration-700 ease-in-out">
               {output ? (
-                /* Output Section - Show whenever we have output */
                 <MUNOutput 
                   output={output} 
                   handleBack={handleBack}
@@ -310,7 +279,6 @@ const handleBack = () => {
                   type={type}
                 />
               ) : (
-                /* Features Section - Only show when no output exists */
                 <div className="bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8">
                   <div className="border-b border-gray-200 pb-4 mb-6">
                     <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-2">Why Choose DiploMate?</h2>
@@ -358,5 +326,4 @@ const handleBack = () => {
       </div>
     </div>
   );
-
 }

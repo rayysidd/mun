@@ -6,11 +6,12 @@ import Image from "next/image"; // Import the Next.js Image component
 const AuthForms = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ username: "", password: "" });
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<{ username?: string, password?: string }>({});
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  const handleInputChange = (e) => {
+  // FIX: Added type for the event parameter 'e'
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -22,7 +23,7 @@ const AuthForms = () => {
   };
 
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors: { username?: string, password?: string } = {};
     if (!formData.username.trim()) {
       newErrors.username = "Username is required";
     } else if (formData.username.length < 3) {
@@ -37,7 +38,8 @@ const AuthForms = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+  // FIX: Added type for the event parameter 'e'
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage("");
     if (!validateForm()) return;
@@ -59,7 +61,7 @@ const AuthForms = () => {
       }, 1200);
     } catch (error) {
       console.error(error);
-      const errMsg = error.response?.data?.error || "Something went wrong. Please try again.";
+      const errMsg = (error as any).response?.data?.error || "Something went wrong. Please try again.";
       setMessage(errMsg);
     } finally {
       setIsLoading(false);
@@ -91,7 +93,6 @@ const AuthForms = () => {
             {/* Logo and Brand */}
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center shadow-lg border border-gray-200">
-                {/* FIX: Replaced <img> with <Image /> */}
                 <Image
                   src="https://upload.wikimedia.org/wikipedia/commons/e/ee/UN_emblem_blue.svg"
                   alt="UN Logo"
@@ -294,7 +295,7 @@ const AuthForms = () => {
                       className="text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors duration-200 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isLogin 
-                        ? "Dont have an account? Create one here" // FIX: Replaced ' with &apos;
+                        ? "Don't have an account? Create one here"
                         : "Already have an account? Sign in instead"
                       }
                     </button>
@@ -331,7 +332,7 @@ const AuthForms = () => {
                     <div className="text-3xl">🎯</div>
                     <div>
                       <h3 className="font-semibold text-gray-800 mb-1">Country-Specific Positioning</h3>
-                      <p className="text-sm text-gray-600">Tailored responses that reflect your assigned countrys real diplomatic stance and foreign policy priorities.</p>
+                      <p className="text-sm text-gray-600">Tailored responses that reflect your assigned country's real diplomatic stance and foreign policy priorities.</p>
                     </div>
                   </div>
                   

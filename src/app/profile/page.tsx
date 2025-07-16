@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react'; // Import useCallback
 import { useRouter } from 'next/navigation';
 
-// UPDATED: The Speech interface now includes topic and country
 interface Speech {
   _id: string;
   content: string;
@@ -17,19 +16,16 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState('');
   const [speeches, setSpeeches] = useState<Speech[]>([]);
-  
-  // NEW: State to track which card is currently expanded.
   const [selectedSpeechId, setSelectedSpeechId] = useState<string | null>(null);
 
-  const handleLogout = () => {
+  // FIX: Wrapped handleLogout in useCallback to stabilize it
+  const handleLogout = useCallback(() => {
     localStorage.removeItem('user');
     localStorage.removeItem('authToken');
     router.push('/auth');
-  };
+  }, [router]);
 
-  // NEW: Function to handle clicking on a card.
   const handleCardClick = (speechId: string) => {
-    // If the clicked card is already open, close it. Otherwise, open it.
     if (selectedSpeechId === speechId) {
       setSelectedSpeechId(null);
     } else {
@@ -65,7 +61,7 @@ const ProfilePage = () => {
       }
     };
     fetchProfileData();
-  }, [router]);
+  }, [router, handleLogout]); // FIX: Added handleLogout to the dependency array
 
   if (loading) {
     return (
@@ -92,7 +88,6 @@ const ProfilePage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        {/* Header Card */}
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
           <div className="flex items-center space-x-6">
             <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
@@ -109,7 +104,6 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        {/* REWORKED: Recent Speeches Section */}
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900">Your Saved Speeches</h2>
@@ -127,21 +121,18 @@ const ProfilePage = () => {
                   className="border border-gray-200 rounded-lg p-4 transition-all duration-300 cursor-pointer hover:shadow-lg hover:border-blue-500"
                   onClick={() => handleCardClick(speech._id)}
                 >
-                  {/* Card Overview */}
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-gray-900 mb-1 truncate">{speech.topic}</h3>
                       <p className="text-gray-600 text-sm mb-2">{speech.country}</p>
                     </div>
                     <div className="text-gray-400 ml-2">
-                      {/* Chevron icon indicates expandability */}
                       <svg className={`w-5 h-5 transition-transform duration-300 ${selectedSpeechId === speech._id ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     </div>
                   </div>
 
-                  {/* Expanded Content View */}
                   {selectedSpeechId === speech._id && (
                     <div className="mt-4 pt-4 border-t border-gray-200">
                       <p className="text-gray-800 text-base whitespace-pre-wrap">{speech.content}</p>
