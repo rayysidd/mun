@@ -1,5 +1,5 @@
 const express = require('express');
-const { registerUser, loginUser, saveSpeech } = require('../controllers/userController');
+const { registerUser, loginUser, saveSpeech,getSpeech} = require('../controllers/userController');
 const { verifyToken } = require('../middleware/authMiddleware');
 const { verify } = require('crypto');
 
@@ -14,5 +14,5 @@ router.post('/save',verifyToken,saveSpeech);
 router.get('/test-token', verifyToken, (req, res) => {
   res.json({ message: 'Token is valid', user: req.user });
 });
-
+router.get('/speeches',verifyToken,getSpeech);
 module.exports = router;

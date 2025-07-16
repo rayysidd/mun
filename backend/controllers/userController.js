@@ -72,4 +72,19 @@ const saveSpeech = async(req,res)=>{
     res.status(500).json({ error: 'Could not save speech' });
   }
 };
-module.exports = { registerUser, loginUser,saveSpeech };
+
+const getSpeech = async(req,res)=>{
+  try{
+    const speeches = await Speech.find({userId:req.user.id}).sort({createdAt:-1});
+
+    if (!speeches) {
+      return res.status(404).json({ error: 'No speeches found for this user.' });
+    }
+
+    res.status(200).json(speeches);
+  }catch (err) {
+    console.error('Error fetching user speeches:', err);
+    res.status(500).json({ error: 'Server error while fetching speeches.' });
+  }
+};
+module.exports = { registerUser, loginUser,saveSpeech ,getSpeech};

@@ -54,7 +54,7 @@ export default function MUNOutput({ output, handleBack, country, topic, type }: 
         method :'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: 'Bearer ${token}',
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({content: output}),
       });
