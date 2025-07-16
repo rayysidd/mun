@@ -1,135 +1,83 @@
 'use client';
 
-import React,{useState, useEffect, useCallback} from "react";
+import { useEffect, useState, useCallback } from 'react'; // Import useCallback
 import { useRouter } from 'next/navigation';
-import { isAuthenticated } from '@/utils/auth';
-import MUNForm from "@/components/MUNForm";
-import MUNOutput from "@/components/MUNOutput";
-import Image from "next/image";
 
-export default function Home(){
+interface Speech {
+  _id: string;
+  content: string;
+  topic: string;
+  country: string;
+  createdAt: string;
+}
+
+const ProfilePage = () => {
   const router = useRouter();
-  const [country,setCountry] = useState('');
-  const [committee,setCommittee] = useState('');
-  const [topic, setTopic] = useState('');
-  const [type, setType] = useState('');
-  const [context, setContext] = useState('');
-  const [output, setOutput] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [username, setUsername] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [briefMode, setBriefMode] = useState(false);
+  const [username, setUsername] = useState('');
+  const [speeches, setSpeeches] = useState<Speech[]>([]);
+  const [selectedSpeechId, setSelectedSpeechId] = useState<string | null>(null);
 
+  // FIX: Wrapped handleLogout in useCallback to stabilize it
   const handleLogout = useCallback(() => {
     localStorage.removeItem('user');
     localStorage.removeItem('authToken');
-    setIsLoggedIn(false);
-    setUsername('');
     router.push('/auth');
   }, [router]);
 
-  useEffect(() => {
-    const checkAuth = () => {
-      if (!isAuthenticated()) {
-        router.push('/auth');
-      } else {
-        setIsLoggedIn(true);
-        const userData = localStorage.getItem('user');
-        try {
-          if (userData && userData !== 'undefined') {
-            const parsedUser = JSON.parse(userData);
-            setUsername(parsedUser.username || 'User');
-          } else {
-            console.warn("No valid user data in localStorage.");
-            setUsername('User');
-          }
-        } catch (error) {
-          console.error("Failed to parse user data from localStorage:", error);
-          setUsername('User');
-        }
-        setLoading(false);
-      }
-    };
-    checkAuth();
-  }, [router]);
-
-
-  const handleProfile = () => {
-    router.push('/profile');
-  };
-
-  const handleLogin = () => {
-    router.push('/auth');
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    const fullContext = [
-      committee && `Committee: ${committee}.`,
-      briefMode && `Generate a quick update instead of a formal speech.`,
-      context
-    ]
-      .filter(Boolean)
-      .join(' ')
-      .trim();
-
-    try {
-      const response = await fetch('https://mun-1igc.onrender.com/api/chat/speech', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          topic: topic,
-          country: country,
-          type: type,
-          committee: committee,
-          context: fullContext
-        }),
-      });
-
-      if (!response.ok) throw new Error('network error');
-
-      const data = await response.json();
-      setOutput(data.speech);
-      setSubmitted(true);
-    } catch (error) {
-      console.error('Fetch error:', error);
-      setOutput('Sorry, something went wrong. Please try again later.');
-      setSubmitted(true);
-    } finally {
-      setIsLoading(false);
+  const handleCardClick = (speechId: string) => {
+    if (selectedSpeechId === speechId) {
+      setSelectedSpeechId(null);
+    } else {
+      setSelectedSpeechId(speechId);
     }
   };
 
-  const handleBack = () => {
-    setSubmitted(false);
-  };
-
-  const handleReset = () => {
-    setCountry('');
-    setCommittee('');
-    setTopic('');
-    setType('');
-    setContext('');
-    setOutput('');
-    setSubmitted(false);
-    setIsLoading(false);
-  };
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        router.push('/auth');
+        return;
+      }
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        setUsername(JSON.parse(userData).username || 'User');
+      }
+      try {
+        const response = await fetch('https://mun-1igc.onrender.com/api/users/speeches', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) {
+          if (response.status === 400 || response.status === 401) handleLogout();
+          throw new Error('Failed to fetch speeches');
+        }
+        const speechesData: Speech[] = await response.json();
+        setSpeeches(speechesData);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfileData();
+  }, [router, handleLogout]); // FIX: Added handleLogout to the dependency array
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-stone-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full mx-4">
           <div className="animate-pulse">
-            <div className="flex items-center justify-center mb-4">
-              <div className="w-16 h-16 bg-gray-200 rounded-full"></div>
+            <div className="flex items-center space-x-4">
+              <div className="rounded-full bg-gray-200 h-16 w-16"></div>
+              <div className="flex-1 space-y-2">
+                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              </div>
             </div>
-            <div className="space-y-3">
-              <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+            <div className="mt-6 space-y-3">
+              <div className="h-4 bg-gray-200 rounded"></div>
+              <div className="h-4 bg-gray-200 rounded w-5/6"></div>
             </div>
           </div>
         </div>
@@ -138,192 +86,84 @@ export default function Home(){
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
-      
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-indigo-400/10 to-blue-400/10 rounded-full blur-3xl"></div>
-      </div>
-
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-white/20 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-20">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center shadow-lg border border-gray-200">
-                <Image
-                  src="https://upload.wikimedia.org/wikipedia/commons/e/ee/UN_emblem_blue.svg"
-                  alt="UN Logo"
-                  width={28}
-                  height={28}
-                  className="w-6 h-6 sm:w-7 sm:h-7 object-contain"
-                />
-              </div>
-              <div>
-                <h1 className="text-xl sm:text-2xl font-bold font-unifraktur text-gray-800">
-                  DiploMate
-                </h1>
-                <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">
-                  AI-powered MUN assistant
-                </p>
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
+          <div className="flex items-center space-x-6">
+            <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+              {username.charAt(0).toUpperCase()}
             </div>
-
-            <div className="flex items-center gap-4">
-              {output && (
-                <>
-                  <button
-                    onClick={handleReset}
-                    className="px-4 py-2 sm:px-6 sm:py-2.5 bg-amber-100 hover:bg-stone-100 text-black rounded-xl font-medium transition-colors shadow-lg text-sm sm:text-base"
-                  >
-                    Clear Speech
-                  </button>
-                </>
-              )}
-              
-              {isLoggedIn ? (
-                <div className="flex items-center gap-3">
-                  <div className="hidden sm:flex items-center gap-2 text-sm text-gray-600">
-                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                      {username.charAt(0).toUpperCase()}
-                    </div>
-                    <span>Hi, {username}</span>
-                  </div>
-                  
-                  <button
-                    onClick={handleProfile}
-                    className="px-4 py-2 sm:px-5 sm:py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors shadow-lg text-sm sm:text-base flex items-center gap-2"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    <span className="hidden sm:inline">Profile</span>
-                  </button>
-                  
-                  <button
-                    onClick={handleLogout}
-                    className="px-4 py-2 sm:px-5 sm:py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-colors shadow-lg text-sm sm:text-base flex items-center gap-2"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    <span className="hidden sm:inline">Logout</span>
-                  </button>
-                </div>
-              ) : (
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={handleLogin}
-                    className="px-4 py-2 sm:px-6 sm:py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors shadow-lg text-sm sm:text-base flex items-center gap-2"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    <span>Login</span>
-                  </button>
-                </div>
-              )}
-
-              <div className="hidden md:flex items-center gap-2 text-sm text-gray-600">
-                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                <span>Ready to generate</span>
-              </div>
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold text-gray-900 mb-1">Welcome back, {username}!</h1>
+              <p className="text-gray-600">You have saved {speeches.length} speeches.</p>
             </div>
+            <button onClick={handleLogout} className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200 shadow-md hover:shadow-lg flex items-center space-x-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+              <span>Logout</span>
+            </button>
           </div>
         </div>
-      </nav>
 
-      <div className="relative z-10 pt-24 sm:pt-28 pb-8 px-3 sm:px-4 md:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
-            
-            <div className="bg-amber-50/80 backdrop-blur-xl border border-white/20 rounded-2xl sm:rounded-3xl shadow-2xl h-fit">
-              <div className="p-6 sm:p-8">
-                <div className="border-b border-gray-200 pb-4 mb-6">
-                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-2">
-                    {output ? 'Edit Speech Parameters' : 'Generate Your Speech'}
-                  </h2>
-                  <p className="text-sm sm:text-base text-gray-600">
-                    {output ? 'Modify settings and generate new content' : 'Fill in the details below to create your diplomatic response'}
-                  </p>
-                </div>
-                
-                <MUNForm
-                  country={country}
-                  setCountry={setCountry}
-                  committee={committee}
-                  setCommittee={setCommittee}
-                  topic={topic}
-                  setTopic={setTopic}
-                  type={type}
-                  setType={setType}
-                  context={context}
-                  setContext={setContext}
-                  isBriefMode={briefMode}
-                  setIsBriefMode={setBriefMode}
-                  submitted={submitted}
-                  isLoading={isLoading}
-                  handleSubmit={handleSubmit}
-                />
-
-              </div>
-            </div>
-
-            <div className="transition-all duration-700 ease-in-out">
-              {output ? (
-                <MUNOutput 
-                  output={output} 
-                  handleBack={handleBack}
-                  country={country}
-                  topic={topic}
-                  type={type}
-                />
-              ) : (
-                <div className="bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8">
-                  <div className="border-b border-gray-200 pb-4 mb-6">
-                    <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-2">Why Choose DiploMate?</h2>
-                    <p className="text-sm sm:text-base text-gray-600">Powerful features designed for MUN success</p>
-                  </div>
-                  
-                  <div className="space-y-6">
-                    <div className="flex items-start gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
-                      <div className="text-3xl">⚡</div>
-                      <div>
-                        <h3 className="font-semibold text-gray-800 mb-1">Instant Generation</h3>
-                        <p className="text-sm text-gray-600">AI-powered responses generated in seconds, saving you valuable preparation time during committee sessions.</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start gap-4 p-4 bg-indigo-50 rounded-xl border border-indigo-100">
-                      <div className="text-3xl">🎯</div>
-                      <div>
-                        <h3 className="font-semibold text-gray-800 mb-1">Country-Specific Positioning</h3>
-                        <p className="text-sm text-gray-600">Tailored responses that reflect your assigned country&apos;s real diplomatic stance and foreign policy priorities.</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start gap-4 p-4 bg-purple-50 rounded-xl border border-purple-100">
-                      <div className="text-3xl">📝</div>
-                      <div>
-                        <h3 className="font-semibold text-gray-800 mb-1">Multiple Document Types</h3>
-                        <p className="text-sm text-gray-600">Generate opening speeches, position papers, draft resolutions, amendments, and working papers with ease.</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start gap-4 p-4 bg-green-50 rounded-xl border border-green-100">
-                      <div className="text-3xl">🌍</div>
-                      <div>
-                        <h3 className="font-semibold text-gray-800 mb-1">Global Coverage</h3>
-                        <p className="text-sm text-gray-600">Comprehensive support for all 193 UN member states with accurate diplomatic language and terminology.</p>
-                      </div>
-                    </div>                   
-                  </div>
-                </div>
-              )}
-            </div>
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">Your Saved Speeches</h2>
+            <button onClick={() => router.push('/')} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 shadow-md hover:shadow-lg flex items-center space-x-2">
+               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+              <span>New Speech</span>
+            </button>
           </div>
+          
+          {speeches.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {speeches.map((speech) => (
+                <div
+                  key={speech._id}
+                  className="border border-gray-200 rounded-lg p-4 transition-all duration-300 cursor-pointer hover:shadow-lg hover:border-blue-500"
+                  onClick={() => handleCardClick(speech._id)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-gray-900 mb-1 truncate">{speech.topic}</h3>
+                      <p className="text-gray-600 text-sm mb-2">{speech.country}</p>
+                    </div>
+                    <div className="text-gray-400 ml-2">
+                      <svg className={`w-5 h-5 transition-transform duration-300 ${selectedSpeechId === speech._id ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  {selectedSpeechId === speech._id && (
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <p className="text-gray-800 text-base whitespace-pre-wrap">{speech.content}</p>
+                      <p className="text-gray-500 text-xs mt-4">
+                        Saved on: {new Date(speech.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 016 0v6a3 3 0 01-3 3z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No speeches saved yet</h3>
+              <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                Go to the home page to generate and save your first speech. It will appear here once saved.
+              </p>
+              <button onClick={() => router.push('/')} className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200 shadow-md hover:shadow-lg">
+                Create Your First Speech
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default ProfilePage;
