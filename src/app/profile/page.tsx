@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-
+import ReactMarkdown from "react-markdown";
 interface Speech {
   _id: string;
   content: string;
@@ -17,7 +17,6 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState('');
   const [speeches, setSpeeches] = useState<Speech[]>([]);
-  const [selectedSpeechId, setSelectedSpeechId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'date' | 'topic' | 'country'>('date');
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -28,12 +27,8 @@ const ProfilePage = () => {
     router.push('/auth');
   }, [router]);
 
-  const handleCardClick = (speechId: string) => {
-    if (selectedSpeechId === speechId) {
-      setSelectedSpeechId(null);
-    } else {
-      setSelectedSpeechId(speechId);
-    }
+  const handleViewSpeech = (speechId: string) => {
+    router.push(`/speech/${speechId}`);
   };
 
   const handleDeleteSpeech = async (speechId: string, e: React.MouseEvent) => {
@@ -54,9 +49,6 @@ const ProfilePage = () => {
       
       if (response.ok) {
         setSpeeches(speeches.filter(speech => speech._id !== speechId));
-        if (selectedSpeechId === speechId) {
-          setSelectedSpeechId(null);
-        }
       } else {
         alert('Failed to delete speech');
       }
@@ -68,7 +60,8 @@ const ProfilePage = () => {
     }
   };
 
-  const copyToClipboard = async (text: string) => {
+  const copyToClipboard = async (text: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     try {
       await navigator.clipboard.writeText(text);
       alert('Speech copied to clipboard!');
@@ -272,10 +265,8 @@ const ProfilePage = () => {
                 {filteredAndSortedSpeeches.map((speech) => (
                   <div
                     key={speech._id}
-                    className={`bg-white/60 backdrop-blur-xl border border-white/30 rounded-xl p-6 transition-all duration-300 cursor-pointer hover:shadow-lg hover:border-blue-500/50 hover:bg-white/80 ${
-                      selectedSpeechId === speech._id ? 'ring-2 ring-blue-500 shadow-xl bg-white/90' : ''
-                    }`}
-                    onClick={() => handleCardClick(speech._id)}
+                    className="bg-white/60 backdrop-blur-xl border border-white/30 rounded-xl p-6 transition-all duration-300 cursor-pointer hover:shadow-lg hover:border-blue-500/50 hover:bg-white/80 hover:scale-105"
+                    onClick={() => handleViewSpeech(speech._id)}
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1 min-w-0">
@@ -288,14 +279,11 @@ const ProfilePage = () => {
                             {new Date(speech.createdAt).toLocaleDateString()}
                           </span>
                         </div>
-                        <p className="text-gray-600 text-sm line-clamp-3">{speech.content}</p>
+                        <p className="text-gray-600 text-sm line-clamp-3"><ReactMarkdown>{speech.content}</ReactMarkdown></p>
                       </div>
                       <div className="flex items-center space-x-2 ml-2">
                         <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            copyToClipboard(speech.content);
-                          }}
+                          onClick={(e) => copyToClipboard(speech.content, e)}
                           className="p-2 text-gray-400 hover:text-blue-600 transition-colors duration-200 rounded-lg hover:bg-blue-50"
                           title="Copy speech"
                         >
@@ -320,26 +308,20 @@ const ProfilePage = () => {
                             </svg>
                           )}
                         </button>
-                        <div className="text-gray-400">
-                          <svg className={`w-4 h-4 transition-transform duration-300 ${selectedSpeechId === speech._id ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </div>
+                    </div>
+
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <div className="flex items-center justify-between text-xs text-gray-500">
+                        <span>{speech.content.length} characters</span>
+                        <div className="flex items-center space-x-1">
+                          <span>Click to view</span>
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                           </svg>
                         </div>
                       </div>
                     </div>
-
-                    {selectedSpeechId === speech._id && (
-                      <div className="mt-4 pt-4 border-t border-gray-200 space-y-4">
-                        <div className="bg-amber-50/80 backdrop-blur-sm rounded-xl p-4 border border-amber-200">
-                          <h4 className="font-medium text-gray-900 mb-2">Full Speech Content:</h4>
-                          <p className="text-gray-800 text-sm whitespace-pre-wrap leading-relaxed">{speech.content}</p>
-                        </div>
-                        <div className="flex justify-between items-center text-xs text-gray-500">
-                          <span>Created: {new Date(speech.createdAt).toLocaleString()}</span>
-                          <span>{speech.content.length} characters</span>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
