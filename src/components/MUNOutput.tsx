@@ -50,7 +50,7 @@ export default function MUNOutput({ output, handleBack, country, topic, type }: 
     }
 
     try{
-      const response = await fetch('https://mun-1igc.onrender.com/api/users/save',{
+      const response = await fetch('http://localhost:5001/api/users/save',{
         method :'POST',
         headers: {
           'Content-Type': 'application/json',

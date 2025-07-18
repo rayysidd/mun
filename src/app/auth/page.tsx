@@ -46,7 +46,7 @@ const AuthForms = () => {
     setIsLoading(true);
 
     try {
-      const endpoint = isLogin ? "https://mun-1igc.onrender.com/api/users/login" : "https://mun-1igc.onrender.com/api/users/register";
+      const endpoint = isLogin ? "http://localhost:5001/api/users/login" : "http://localhost:5001/api/users/register";
       const response = await axios.post(endpoint, formData);
 
       const { token, user } = response.data;

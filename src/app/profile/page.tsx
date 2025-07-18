@@ -42,7 +42,7 @@ const ProfilePage = () => {
     const token = localStorage.getItem('authToken');
     
     try {
-      const response = await fetch(`https://mun-1igc.onrender.com/api/users/speeches/${speechId}`, {
+      const response = await fetch(`http://localhost:5001/api/users/speeches/${speechId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -101,7 +101,7 @@ const ProfilePage = () => {
         setUsername(JSON.parse(userData).username || 'User');
       }
       try {
-        const response = await fetch('https://mun-1igc.onrender.com/api/users/speeches', {
+        const response = await fetch('http://localhost:5001/users/speeches', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!response.ok) {
