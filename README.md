@@ -1,4 +1,4 @@
-Check it out here : https://diplomate.vercel.app/
+Check it out here : [https://diplomate.vercel.app/](https://mun-rayysidds-projects.vercel.app/auth)
 
 ## 🏛️ DiploMate (Work in Progress)
 
