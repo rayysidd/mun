@@ -1,5 +1,5 @@
 const express = require('express');
-const { registerUser, loginUser, saveSpeech,getSpeech} = require('../controllers/userController');
+const { registerUser, loginUser, saveSpeech,getSpeech,deleteSpeech} = require('../controllers/userController');
 const { verifyToken } = require('../middleware/authMiddleware');
 const { verify } = require('crypto');
 
@@ -15,4 +15,5 @@ router.get('/test-token', verifyToken, (req, res) => {
   res.json({ message: 'Token is valid', user: req.user });
 });
 router.get('/speeches',verifyToken,getSpeech);
+router.delete('/speeches/:id',verifyToken,deleteSpeech);
 module.exports = router;

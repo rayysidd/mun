@@ -77,6 +77,28 @@ const saveSpeech = async(req,res)=>{
   }
 };
 
+const deleteSpeech = async(req,res)=>{
+  try{
+    const speech = await Speech.findById(req.params.id);
+
+    // Check if speech exists
+    if (!speech) {
+      return res.status(404).json({ error: 'Speech not found' });
+    }
+
+    // Check if the speech belongs to the logged-in user
+    if (speech.userId.toString() !== req.user.id) {
+      return res.status(401).json({ error: 'User not authorized' });
+    }
+
+    await Speech.findByIdAndDelete(req.params.id);
+    res.status(200).json({ id: req.params.id, message: 'Speech deleted successfully' });
+
+  }catch (err) {
+    console.error('Error deleting speech:', err);
+    res.status(500).json({ error: 'Server error while deleting speech.' });
+  }
+};
 const getSpeech = async(req,res)=>{
   try{
     const speeches = await Speech.find({userId:req.user.id}).sort({createdAt:-1});
@@ -91,4 +113,4 @@ const getSpeech = async(req,res)=>{
     res.status(500).json({ error: 'Server error while fetching speeches.' });
   }
 };
-module.exports = { registerUser, loginUser,saveSpeech ,getSpeech};
+module.exports = { registerUser, loginUser,saveSpeech ,getSpeech,deleteSpeech};

@@ -8,16 +8,23 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 // Chat endpoint
 router.post('/', async (req, res) => {
   try {
-    const { topic,committee, country,type, context } = req.body;
+    const { topic, committee, country, type, context } = req.body;
     
-    // Initialize the model
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    // Initialize the model with the Google Search tool enabled
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-2.0-flash",
+      tools: {
+        googleSearch: {}, // Enable Google Search
+      },
+    });
 
-    // Construct the prompt with country-specific context
-    const prompt = `As a representative of ${country}, please provide a ${type} for the commiittee ${committee},on the topic ${topic}
-    Context: ${context}.
-    Include the name of the committee as well (${committee})
-    Please maintain consider the country's stance on international issues.`;
+    // Construct a new prompt that instructs the model to search first
+    const prompt =`
+      First, perform a Google search to find the official or widely recognized stance of ${country} on the topic of "${topic}".
+      Then, using that information, act as a representative of ${country} and generate a ${type} speech for the following MUN topic: "${topic}".
+      Additional Context: ${context}.
+      The speech must accurately reflect the country's position you found in the search.In the output include only the speech and nothing else
+    `;
 
     // Generate response
     const result = await model.generateContent(prompt);
@@ -36,12 +43,22 @@ router.post('/speech', async (req, res) => {
   try {
     const { topic, country, type, context } = req.body;
     
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    // Initialize the model with the Google Search tool enabled
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-2.0-flash",
+      tools: {
+        googleSearch: {}, // Enable Google Search
+      },
+    });
 
-    const prompt = `As a representative of ${country}, please generate a ${type} speech for the following MUN topic: ${topic}
-    Context: ${context}
-    The speech should reflect the country's position on the issue.`;
-    console.log(prompt);
+    // Construct a new prompt that instructs the model to search first
+    const prompt = `
+      First, perform a Google search to find the official or widely recognized stance of ${country} on the topic of "${topic}".
+      Then, using that information, act as a representative of ${country} and generate a ${type} speech for the following MUN topic: "${topic}".
+      Additional Context: ${context}.
+      The speech must accurately reflect the country's position you found in the search.In the output include only the speech and nothing else
+    `;
+
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const speech = response.text();
@@ -58,11 +75,22 @@ router.post('/resolution', async (req, res) => {
   try {
     const { topic, country, context } = req.body;
     
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    // Initialize the model with the Google Search tool enabled
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-flash",
+      tools: {
+        googleSearch: {}, // Enable Google Search
+      },
+    });
 
-    const prompt = `As a representative of ${country}, please draft a UN resolution for the following topic: ${topic}
-    Context: ${context}
-    The resolution should follow proper UN format and reflect the country's position while being realistic and implementable.`;
+    // Construct a new prompt that instructs the model to search first
+    const prompt = `
+      First, perform a Google search to find the official or widely recognized stance of ${country} on the topic of "${topic}".
+      Also include recent events
+      Then, using that information, act as a representative of ${country} and draft a UN resolution for the topic: "${topic}".
+      Additional Context: ${context}.
+      The resolution must follow proper UN format, be realistic, implementable, and accurately reflect the country's position you found in the search.
+    `;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
@@ -75,4 +103,4 @@ router.post('/resolution', async (req, res) => {
   }
 });
 
-module.exports = router; 
+module.exports = router;

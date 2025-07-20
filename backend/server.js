@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const mongoose = require('mongoose');
 const userRoutes = require('./routes/userRoutes');
+const eventRoutes = require('./routes/eventRoutes');
 // Load environment variables
 dotenv.config();
 
@@ -28,6 +29,6 @@ app.get('/',(req,res)=>{
 // // Routes
 app.use('/api/chat', require('./routes/chat'));
 app.use('/api/users', userRoutes);
-// app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/events',eventRoutes);
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`)); 
