@@ -9,12 +9,13 @@ interface MUNOutputProps {
   country: string;
   topic: string;
   type: string;
+  eventId: string;
 }
 
-export default function MUNOutput({ output, handleBack, country, topic, type }: MUNOutputProps) {
+export default function MUNOutput({ output, handleBack, country, topic, type, eventId }: MUNOutputProps) {
   const outputRef = useRef<HTMLDivElement>(null);
-  // FIX: Re-added the 'copied' state to be used with the new copy button.
   const [copied, setCopied] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (outputRef.current) {
@@ -26,7 +27,7 @@ export default function MUNOutput({ output, handleBack, country, topic, type }: 
     try {
       await navigator.clipboard.writeText(output);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000); // Hide "Copied!" message after 2 seconds
+      setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy text: ', err);
     }
@@ -42,110 +43,207 @@ export default function MUNOutput({ output, handleBack, country, topic, type }: 
     document.body.removeChild(element);
   };
 
-  const handleSave = async () =>{
+  const handleSave = async () => {
     const token = localStorage.getItem('authToken');
-    if(!token){
+    if (!token) {
       alert('You need to be logged in to save speeches');
       return;
     }
 
-    try{
-      const response = await fetch('http://localhost:5001/api/users/save',{
-        method :'POST',
+    if (!eventId) {
+      alert('This speech is not associated with an event and cannot be saved.');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const response = await fetch('http://localhost:5001/api/users/save', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({content: output,topic:topic,country:country}),
+        body: JSON.stringify({
+          content: output,
+          topic: topic,
+          country: country,
+          eventId: eventId 
+        }),
       });
+      
       if (!response.ok) throw new Error('Failed to save speech');
 
-      // FIX: Removed the unused 'data' variable.
       await response.json(); 
       alert('Speech saved successfully!');
-    }catch(err){
+    } catch (err) {
       console.error('Error saving speech:', err);
       alert('Error saving speech. Try again later.');
+    } finally {
+      setSaving(false);
     }
   };
+
   return (
     <div className="flex-1 ml-0 sm:ml-8 mt-6 sm:mt-0 flex flex-col animate-in slide-in-from-right duration-500">
       {/* Header */}
-      <div className="bg-white rounded-t-2xl px-4 py-4 sm:px-8 sm:py-6 border-b border-gray-100 shadow-sm">
+      <div className="diplomatic-card bg-slate-800/90 backdrop-blur-lg rounded-t-2xl px-4 py-4 sm:px-8 sm:py-6 border-b border-silver/20 shadow-xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center">
+            <h2 className="text-xl sm:text-2xl font-bold text-silver flex items-center gap-2">
               🏛️ Generated Response
             </h2>
-            <div className="flex flex-wrap items-center gap-2 sm:space-x-4 mt-2 text-xs sm:text-sm text-gray-600">
-              <span className="bg-blue-100 text-blue-800 px-2 py-1 sm:px-3 rounded-full font-medium">
+            <div className="flex flex-wrap items-center gap-2 sm:space-x-4 mt-3 text-xs sm:text-sm">
+              <span className="bg-blue-900/50 text-blue-300 px-2 py-1 sm:px-3 rounded-full font-medium border border-blue-400/30">
                 {country}
               </span>
-              <span className="bg-green-100 text-green-800 px-2 py-1 sm:px-3 rounded-full font-medium">
+              <span className="bg-green-900/50 text-green-300 px-2 py-1 sm:px-3 rounded-full font-medium border border-green-400/30">
                 {type}
               </span>
             </div>
           </div>
           <div className="flex space-x-2 sm:space-x-3">
-            
-            {/* NEW: Added a Copy button */}
-            <button
-              onClick={handleCopy}
-              className="flex items-center space-x-1 sm:space-x-2 px-3 py-2 sm:px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-all duration-200 font-medium shadow-sm hover:shadow-md text-xs sm:text-sm"
+            <button 
+              onClick={handleCopy} 
+              className="diplomatic-action-btn flex items-center space-x-1 sm:space-x-2 px-3 py-2 sm:px-4 bg-slate-700/90 hover:bg-slate-600/90 text-silver rounded-xl font-medium text-xs sm:text-sm border border-silver/20 transition-all duration-200"
             >
-              <span>{copied ? '✅ Copied!' : '📋 Copy'}</span>
+              <span>{copied ? '✅' : '📋'}</span>
+              <span>{copied ? 'Copied!' : 'Copy'}</span>
             </button>
-            
-            <button
-              onClick={handleDownload}
-              className="flex items-center space-x-1 sm:space-x-2 px-3 py-2 sm:px-4 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-xl transition-all duration-200 font-medium shadow-sm hover:shadow-md text-xs sm:text-sm"
+            <button 
+              onClick={handleDownload} 
+              className="diplomatic-action-btn flex items-center space-x-1 sm:space-x-2 px-3 py-2 sm:px-4 bg-indigo-900/50 hover:bg-indigo-800/50 text-indigo-300 rounded-xl font-medium text-xs sm:text-sm border border-indigo-400/30 transition-all duration-200"
             >
               <span>💾</span>
               <span className="hidden sm:inline">Download</span>
             </button>
-
-            <button
+            <button 
               onClick={handleSave}
-              className="flex items-center space-x-1 sm:space-x-2 px-3 py-2 sm:px-4 bg-teal-100 hover:bg-teal-200 text-teal-700 rounded-xl transition-all duration-200 font-medium shadow-sm hover:shadow-md text-xs sm:text-sm"
+              disabled={saving}
+              className="diplomatic-action-btn flex items-center space-x-1 sm:space-x-2 px-3 py-2 sm:px-4 bg-teal-900/50 hover:bg-teal-800/50 text-teal-300 rounded-xl font-medium text-xs sm:text-sm border border-teal-400/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span>💾</span>
-              <span className="hidden sm:inline">Save</span>
+              {saving ? (
+                <>
+                  <div className="w-3 h-3 border border-teal-300 border-t-transparent rounded-full animate-spin"></div>
+                  <span className="hidden sm:inline">Saving...</span>
+                </>
+              ) : (
+                <>
+                  <span>💾</span>
+                  <span className="hidden sm:inline">Save</span>
+                </>
+              )}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Content */}
-      <div
-        ref={outputRef}
-        tabIndex={-1}
-        className="bg-amber-50 flex-1 p-4 sm:p-8 rounded-b-2xl shadow-lg overflow-auto max-h-[50vh] sm:max-h-[70vh] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
-        aria-label="MUN Research Output"
+      {/* Output Content */}
+      <div 
+        ref={outputRef} 
+        tabIndex={-1} 
+        className="diplomatic-card bg-slate-700/90 backdrop-blur-lg flex-1 p-4 sm:p-8 rounded-b-2xl shadow-xl overflow-auto max-h-[50vh] sm:max-h-[70vh] border border-silver/20 border-t-0"
       >
-        <div className="prose prose-sm sm:prose-lg max-w-none">
-          <div className="whitespace-pre-wrap text-gray-800 leading-relaxed text-sm sm:text-base">
-            <ReactMarkdown>{output}</ReactMarkdown>
+        <div className="prose prose-sm sm:prose-lg max-w-none prose-invert">
+          <div className="whitespace-pre-wrap text-silver/90 leading-relaxed text-sm sm:text-base">
+            <ReactMarkdown 
+              components={{
+                h1: ({children}) => <h1 className="text-silver font-bold text-xl mb-4">{children}</h1>,
+                h2: ({children}) => <h2 className="text-silver font-bold text-lg mb-3">{children}</h2>,
+                h3: ({children}) => <h3 className="text-silver font-semibold text-base mb-2">{children}</h3>,
+                p: ({children}) => <p className="text-silver/90 mb-3 leading-relaxed">{children}</p>,
+                strong: ({children}) => <strong className="text-silver font-semibold">{children}</strong>,
+                em: ({children}) => <em className="text-silver/80 italic">{children}</em>,
+                ul: ({children}) => <ul className="text-silver/90 list-disc list-inside mb-3 space-y-1">{children}</ul>,
+                ol: ({children}) => <ol className="text-silver/90 list-decimal list-inside mb-3 space-y-1">{children}</ol>,
+                li: ({children}) => <li className="text-silver/90">{children}</li>,
+                blockquote: ({children}) => (
+                  <blockquote className="border-l-4 border-silver/30 pl-4 italic text-silver/80 bg-slate-800/50 py-2 rounded-r-lg my-4">
+                    {children}
+                  </blockquote>
+                ),
+              }}
+            >
+              {output}
+            </ReactMarkdown>
           </div>
         </div>
       </div>
 
       {/* Footer */}
       <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
-        <button
-          onClick={handleBack}
-          className="flex items-center space-x-2 px-4 py-2 sm:px-6 sm:py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-all duration-200 font-medium shadow-sm hover:shadow-md transform hover:scale-105 text-sm sm:text-base"
+        <button 
+          onClick={handleBack} 
+          className="diplomatic-action-btn flex items-center space-x-2 px-4 py-2 sm:px-6 sm:py-3 bg-slate-700/90 hover:bg-slate-600/90 text-silver rounded-xl font-medium border border-silver/20 transition-all duration-200"
         >
           <span>←</span>
           <span>Back to Edit</span>
         </button>
-        
-        <div className="text-xs sm:text-sm text-gray-500 flex items-center space-x-2">
-          <span>📊</span>
-          <span>{output.split(' ').length} words</span>
+        <div className="text-xs sm:text-sm text-silver/60 flex items-center space-x-3 bg-slate-800/50 px-3 py-2 rounded-lg border border-silver/10">
+          <div className="flex items-center space-x-1">
+            <span>📊</span>
+            <span>{output.split(' ').length} words</span>
+          </div>
           <span>•</span>
-          <span>{output.split('\n').length} lines</span>
+          <div className="flex items-center space-x-1">
+            <span>📝</span>
+            <span>{output.split('\n').length} lines</span>
+          </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .diplomatic-card {
+          background: linear-gradient(135deg, 
+            rgba(30, 41, 59, 0.95) 0%, 
+            rgba(51, 65, 85, 0.9) 50%, 
+            rgba(30, 41, 59, 0.95) 100%
+          );
+        }
+
+        .diplomatic-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 3px;
+          background: linear-gradient(90deg, #c0c0c0, #e6e6e6, #c0c0c0);
+          transform: scaleX(0);
+          transition: transform 0.3s ease;
+        }
+
+        .diplomatic-card:hover::before {
+          transform: scaleX(1);
+        }
+
+        .diplomatic-action-btn:hover {
+          transform: translateY(-1px);
+        }
+
+        .text-silver {
+          color: #c0c0c0;
+        }
+
+        .text-silver\/90 {
+          color: rgba(192, 192, 192, 0.9);
+        }
+
+        .text-silver\/80 {
+          color: rgba(192, 192, 192, 0.8);
+        }
+
+        .text-silver\/60 {
+          color: rgba(192, 192, 192, 0.6);
+        }
+
+        .border-silver\/20 {
+          border-color: rgba(192, 192, 192, 0.2);
+        }
+
+        .border-silver\/10 {
+          border-color: rgba(192, 192, 192, 0.1);
+        }
+      `}</style>
     </div>
   );
 }

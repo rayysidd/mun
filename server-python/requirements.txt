@@ -1,0 +1,20 @@
+#ai/ml
+sentence-transformers
+torch
+nltk
+
+#db
+chromadb
+pymongo
+
+# API Server
+fastapi
+uvicorn
+
+
+# Web Scraping
+requests
+beautifulsoup4
+
+# Environment variables
+python-dotenv

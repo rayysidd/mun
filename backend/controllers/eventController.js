@@ -2,7 +2,7 @@ const EventModel = require('../models/eventModel');
 const Delegation = require('../models/delegationModel'); 
 const Source = require('../models/sourceModel');
 const bcrypt = require('bcryptjs');
-
+const axios = require('axios');
 /**
  * @desc    Create a new MUN event
  * @route   POST /api/events
@@ -262,4 +262,52 @@ const getSources = async (req, res) => {
     res.status(500).json({ error: 'Server error while fetching sources.' });
   }
 };
-module.exports = {createEvent,joinEvent,getEvents,getDelegates,leaveEvent,getSingleEvent,addSource,getSources};
+
+/**
+ * @desc    Proxy a query to the Python AI service
+ * @route   POST /api/events/:eventId/query
+ * @access  Private
+ */
+const queryAI = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    // UPDATED: Destructure the new selected_sources array from the request body
+    const { query_text, use_rag, selected_sources } = req.body;
+    const userId = req.user.id;
+
+    if (!query_text) {
+      return res.status(400).json({ error: 'Query text is required.' });
+    }
+
+    const delegation = await Delegation.findOne({ eventId, userId });
+    if (!delegation) {
+      return res.status(403).json({ error: 'Forbidden: You are not a participant in this event.' });
+    }
+
+    const event = await EventModel.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found.' });
+    }
+
+    // Forward the request to the Python AI service, now with the selected_sources array
+    const aiServiceResponse = await axios.post('http://127.0.0.1:8000/query', {
+      event_id: eventId,
+      query_text: query_text,
+      country: delegation.country,
+      committee: event.committee,
+      agenda: event.agenda,
+      use_rag: use_rag,
+      selected_sources: selected_sources, // <-- Pass the array to the Python service
+    });
+
+    res.status(200).json(aiServiceResponse.data);
+
+  } catch (error) {
+    console.error('AI Query Proxy Error:', error.response ? error.response.data : error.message);
+    res.status(500).json({ error: 'An error occurred while communicating with the AI service.' });
+  }
+};
+;
+
+
+module.exports = {createEvent,joinEvent,getEvents,getDelegates,leaveEvent,getSingleEvent,addSource,getSources,queryAI};

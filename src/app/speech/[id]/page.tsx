@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
 import ReactMarkdown from "react-markdown";
+
 interface Speech {
   _id: string;
   content: string;
@@ -117,15 +118,25 @@ const SpeechDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-stone-50 flex items-center justify-center">
-        <div className="bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center">
+        <div className="world-map-background">
+          <div className="map-image-container">
+            <img 
+              src="https://www.georgethegeographer.co.uk/Base_maps/World_b&w_unnamed.jpg" 
+              alt="World Map Background"
+              className="world-map-image"
+            />
+          </div>
+          <div className="color-overlay"></div>
+        </div>
+        <div className="diplomatic-card bg-slate-800/90 backdrop-blur-lg border border-silver/20 rounded-2xl shadow-xl p-8 max-w-md w-full mx-4 relative z-10">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/2 mb-6"></div>
+            <div className="h-8 bg-silver/20 rounded w-3/4 mb-4"></div>
+            <div className="h-4 bg-silver/20 rounded w-1/2 mb-6"></div>
             <div className="space-y-3">
-              <div className="h-4 bg-gray-200 rounded"></div>
-              <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-              <div className="h-4 bg-gray-200 rounded w-4/5"></div>
+              <div className="h-4 bg-silver/20 rounded"></div>
+              <div className="h-4 bg-silver/20 rounded w-5/6"></div>
+              <div className="h-4 bg-silver/20 rounded w-4/5"></div>
             </div>
           </div>
         </div>
@@ -135,18 +146,28 @@ const SpeechDetailPage = () => {
 
   if (error || !speech) {
     return (
-      <div className="min-h-screen bg-stone-50 flex items-center justify-center">
-        <div className="bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center">
+        <div className="world-map-background">
+          <div className="map-image-container">
+            <img 
+              src="https://www.georgethegeographer.co.uk/Base_maps/World_b&w_unnamed.jpg" 
+              alt="World Map Background"
+              className="world-map-image"
+            />
+          </div>
+          <div className="color-overlay"></div>
+        </div>
+        <div className="diplomatic-card bg-slate-800/90 backdrop-blur-lg border border-silver/20 rounded-2xl shadow-xl p-8 max-w-md w-full mx-4 text-center relative z-10">
+          <div className="w-16 h-16 bg-red-900/50 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-400/30">
+            <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Speech Not Found</h2>
-          <p className="text-gray-600 mb-6">{error || 'The speech you are looking for does not exist.'}</p>
+          <h2 className="text-xl font-semibold text-silver mb-2">Speech Not Found</h2>
+          <p className="text-silver/70 mb-6">{error || 'The speech you are looking for does not exist.'}</p>
           <button 
             onClick={() => router.push('/profile')}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-colors duration-200 shadow-lg hover:shadow-xl"
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl backdrop-blur-sm border border-blue-500/30"
           >
             Back to Profile
           </button>
@@ -156,34 +177,49 @@ const SpeechDetailPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-indigo-400/10 to-blue-400/10 rounded-full blur-3xl"></div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 relative overflow-hidden">
+      {/* World Map Background */}
+      <div className="world-map-background">
+        <div className="map-image-container">
+          <img 
+            src="https://www.georgethegeographer.co.uk/Base_maps/World_b&w_unnamed.jpg" 
+            alt="World Map Background"
+            className="world-map-image"
+          />
+        </div>
+        <div className="color-overlay"></div>
+      </div>
+
+      {/* Floating Diplomatic Elements */}
+      <div className="floating-elements">
+        <div className="diplomatic-icon icon-1">🏛️</div>
+        <div className="diplomatic-icon icon-2">⚖️</div>
+        <div className="diplomatic-icon icon-3">🌍</div>
+        <div className="diplomatic-icon icon-4">🤝</div>
+        <div className="diplomatic-icon icon-5">📜</div>
+        <div className="diplomatic-icon icon-6">🕊️</div>
       </div>
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-white/20 shadow-lg">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-silver/20 shadow-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-20">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center shadow-lg border border-gray-200">
+              <div className="logo-container">
                 <Image
                   src="https://upload.wikimedia.org/wikipedia/commons/e/ee/UN_emblem_blue.svg"
                   alt="UN Logo"
-                  width={28}
-                  height={28}
-                  className="w-6 h-6 sm:w-7 sm:h-7 object-contain"
+                  width={40}
+                  height={40}
+                  className="logo-image"
                 />
               </div>
               <div>
-                <h1 className="text-xl sm:text-2xl font-bold font-unifraktur text-gray-800">
+                <h1 className="text-xl sm:text-2xl font-bold text-silver">
                   DiploMate
                 </h1>
-                <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">
-                  AI-powered MUN assistant
+                <p className="text-xs sm:text-sm text-silver/70 hidden sm:block">
+                  Speech Detail
                 </p>
               </div>
             </div>
@@ -191,7 +227,7 @@ const SpeechDetailPage = () => {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => router.push('/profile')}
-                className="px-4 py-2 sm:px-6 sm:py-2.5 bg-gray-600 hover:bg-gray-700 text-white rounded-xl font-medium transition-colors shadow-lg text-sm sm:text-base flex items-center gap-2"
+                className="px-4 py-2 sm:px-6 sm:py-2.5 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white rounded-xl font-medium transition-all duration-200 shadow-lg text-sm sm:text-base flex items-center gap-2 backdrop-blur-sm border border-gray-500/30"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -200,8 +236,8 @@ const SpeechDetailPage = () => {
               </button>
               
               <button
-                onClick={() => router.push('/')}
-                className="px-4 py-2 sm:px-6 sm:py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition-colors shadow-lg text-sm sm:text-base flex items-center gap-2"
+                onClick={() => router.push('/speech')}
+                className="px-4 py-2 sm:px-6 sm:py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl font-medium transition-all duration-200 shadow-lg text-sm sm:text-base flex items-center gap-2 backdrop-blur-sm border border-green-500/30"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -209,8 +245,8 @@ const SpeechDetailPage = () => {
                 <span className="hidden sm:inline">New Speech</span>
               </button>
               
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+              <div className="flex items-center gap-2 text-sm text-silver/70">
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg">
                   {username.charAt(0).toUpperCase()}
                 </div>
                 <span className="hidden sm:inline">Hi, {username}</span>
@@ -218,7 +254,7 @@ const SpeechDetailPage = () => {
               
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 sm:px-5 sm:py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-colors shadow-lg text-sm sm:text-base flex items-center gap-2"
+                className="px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white rounded-xl font-medium transition-all duration-200 shadow-lg text-sm sm:text-base flex items-center gap-2 backdrop-blur-sm border border-red-500/30"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -234,15 +270,15 @@ const SpeechDetailPage = () => {
       <div className="relative z-10 pt-24 sm:pt-28 pb-8 px-3 sm:px-4 md:px-8">
         <div className="max-w-4xl mx-auto">
           {/* Speech Header */}
-          <div className="bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 mb-8">
+          <div className="diplomatic-card bg-slate-800/90 backdrop-blur-lg border border-silver/20 rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8 mb-8">
             <div className="flex items-start justify-between mb-6">
               <div className="flex-1">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">{speech.topic}</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-silver mb-4">{speech.topic}</h1>
                 <div className="flex items-center space-x-4 mb-4">
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-900/50 text-blue-300 border border-blue-400/30">
                     {speech.country}
                   </span>
-                  <span className="text-sm text-gray-500">
+                  <span className="text-sm text-silver/60">
                     Created: {new Date(speech.createdAt).toLocaleDateString('en-US', { 
                       year: 'numeric', 
                       month: 'long', 
@@ -252,7 +288,7 @@ const SpeechDetailPage = () => {
                     })}
                   </span>
                 </div>
-                <div className="flex items-center space-x-4 text-sm text-gray-600">
+                <div className="flex items-center space-x-4 text-sm text-silver/70">
                   <span>{speech.content.split(' ').length} words</span>
                   <span>•</span>
                   <span>{speech.content.length} characters</span>
@@ -262,11 +298,11 @@ const SpeechDetailPage = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-4 pt-4 border-t border-gray-200">
+            <div className="flex items-center gap-4 pt-4 border-t border-silver/20">
               <button
                 onClick={copyToClipboard}
                 disabled={copying}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors shadow-lg disabled:opacity-50"
+                className="diplomatic-action-btn flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-medium transition-all duration-200 shadow-lg disabled:opacity-50 backdrop-blur-sm border border-blue-500/30"
               >
                 {copying ? (
                   <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -284,7 +320,7 @@ const SpeechDetailPage = () => {
               <button
                 onClick={handleDeleteSpeech}
                 disabled={deleting}
-                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-colors shadow-lg disabled:opacity-50"
+                className="diplomatic-action-btn flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white rounded-xl font-medium transition-all duration-200 shadow-lg disabled:opacity-50 backdrop-blur-sm border border-red-500/30"
               >
                 {deleting ? (
                   <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -302,22 +338,203 @@ const SpeechDetailPage = () => {
           </div>
 
           {/* Speech Content */}
-          <div className="bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8">
-            <div className="border-b border-gray-200 pb-4 mb-6">
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-2">Speech Content</h2>
-              <p className="text-sm sm:text-base text-gray-600">Full diplomatic response</p>
+          <div className="diplomatic-card bg-slate-800/90 backdrop-blur-lg border border-silver/20 rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8">
+            <div className="border-b border-silver/20 pb-4 mb-6">
+              <h2 className="text-xl sm:text-2xl font-semibold text-silver mb-2">Speech Content</h2>
+              <p className="text-sm sm:text-base text-silver/70">Full diplomatic response</p>
             </div>
             
-            <div className="prose prose-lg max-w-none">
-              <div className="bg-amber-50/80 backdrop-blur-sm rounded-xl p-6 border border-amber-200">
-                <p className="text-gray-900 leading-relaxed whitespace-pre-wrap text-base sm:text-lg font-medium">
-                  <ReactMarkdown>{speech.content}</ReactMarkdown>
-                </p>
+            <div className="prose prose-lg max-w-none prose-invert">
+              <div className="bg-slate-700/50 backdrop-blur-sm rounded-xl p-6 border border-silver/10">
+                <div className="text-silver/90 leading-relaxed whitespace-pre-wrap text-base sm:text-lg">
+                  <ReactMarkdown 
+                    components={{
+                      h1: ({children}) => <h1 className="text-silver font-bold text-2xl mb-4">{children}</h1>,
+                      h2: ({children}) => <h2 className="text-silver font-bold text-xl mb-3">{children}</h2>,
+                      h3: ({children}) => <h3 className="text-silver font-semibold text-lg mb-2">{children}</h3>,
+                      p: ({children}) => <p className="text-silver/90 mb-4 leading-relaxed">{children}</p>,
+                      strong: ({children}) => <strong className="text-silver font-semibold">{children}</strong>,
+                      em: ({children}) => <em className="text-silver/80 italic">{children}</em>,
+                      ul: ({children}) => <ul className="text-silver/90 list-disc list-inside mb-4 space-y-2">{children}</ul>,
+                      ol: ({children}) => <ol className="text-silver/90 list-decimal list-inside mb-4 space-y-2">{children}</ol>,
+                      li: ({children}) => <li className="text-silver/90">{children}</li>,
+                      blockquote: ({children}) => (
+                        <blockquote className="border-l-4 border-silver/30 pl-4 italic text-silver/80 bg-slate-800/50 py-3 rounded-r-lg my-4">
+                          {children}
+                        </blockquote>
+                      ),
+                    }}
+                  >
+                    {speech.content}
+                  </ReactMarkdown>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .world-map-background {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          z-index: -1;
+        }
+
+        .map-image-container {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+        }
+
+        .world-map-image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center;
+          opacity: 0.4;
+          filter: contrast(1.2) brightness(0.8);
+        }
+
+        .color-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, 
+            rgba(12, 22, 49, 0.85) 0%, 
+            rgba(26, 47, 92, 0.75) 25%, 
+            rgba(43, 74, 138, 0.7) 50%, 
+            rgba(26, 47, 92, 0.75) 75%, 
+            rgba(12, 22, 49, 0.85) 100%
+          );
+          mix-blend-mode: multiply;
+        }
+
+        .floating-elements {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 2;
+        }
+
+        .diplomatic-icon {
+          position: absolute;
+          font-size: 2rem;
+          opacity: 0.5;
+          animation: diplomaticFloat 25s infinite ease-in-out;
+          filter: grayscale(0.2) brightness(1.3) drop-shadow(0 0 10px rgba(192, 192, 192, 0.3));
+        }
+
+        .icon-1 { top: 15%; left: 10%; animation-delay: 0s; }
+        .icon-2 { top: 25%; right: 15%; animation-delay: -5s; }
+        .icon-3 { top: 45%; left: 5%; animation-delay: -10s; }
+        .icon-4 { top: 35%; right: 8%; animation-delay: -15s; }
+        .icon-5 { bottom: 30%; left: 12%; animation-delay: -20s; }
+        .icon-6 { bottom: 20%; right: 20%; animation-delay: -3s; }
+
+        .logo-container {
+          padding: 0.5rem;
+          background: linear-gradient(135deg, rgba(192, 192, 192, 0.15), rgba(192, 192, 192, 0.05));
+          border-radius: 12px;
+          border: 1px solid rgba(192, 192, 192, 0.3);
+        }
+
+        .logo-image {
+          filter: brightness(0) saturate(100%) invert(75%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(1.2) contrast(1);
+        }
+
+        .diplomatic-card {
+          background: linear-gradient(135deg, 
+            rgba(30, 41, 59, 0.95) 0%, 
+            rgba(51, 65, 85, 0.9) 50%, 
+            rgba(30, 41, 59, 0.95) 100%
+          );
+        }
+
+        .diplomatic-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 3px;
+          background: linear-gradient(90deg, #c0c0c0, #e6e6e6, #c0c0c0);
+          transform: scaleX(0);
+          transition: transform 0.3s ease;
+        }
+
+        .diplomatic-card:hover::before {
+          transform: scaleX(1);
+        }
+
+        .diplomatic-action-btn:hover {
+          transform: translateY(-1px);
+        }
+
+        .text-silver {
+          color: #c0c0c0;
+        }
+
+        .text-silver\/90 {
+          color: rgba(192, 192, 192, 0.9);
+        }
+
+        .text-silver\/80 {
+          color: rgba(192, 192, 192, 0.8);
+        }
+
+        .text-silver\/70 {
+          color: rgba(192, 192, 192, 0.7);
+        }
+
+        .text-silver\/60 {
+          color: rgba(192, 192, 192, 0.6);
+        }
+
+        .border-silver\/20 {
+          border-color: rgba(192, 192, 192, 0.2);
+        }
+
+        .border-silver\/10 {
+          border-color: rgba(192, 192, 192, 0.1);
+        }
+
+        .bg-silver\/20 {
+          background-color: rgba(192, 192, 192, 0.2);
+        }
+
+        @keyframes diplomaticFloat {
+          0%, 100% { transform: translateY(0px) scale(1); opacity: 0.5; }
+          25% { transform: translateY(-15px) scale(1.1); opacity: 0.7; }
+          50% { transform: translateY(-5px) scale(0.9); opacity: 0.6; }
+          75% { transform: translateY(-10px) scale(1.05); opacity: 0.8; }
+        }
+
+        @media (max-width: 768px) {
+          .diplomatic-card {
+            padding: 1.5rem;
+          }
+
+          .world-map-image {
+            opacity: 0.3;
+          }
+
+          .diplomatic-icon {
+            font-size: 1.5rem;
+          }
+        }
+      `}</style>
     </div>
   );
 };

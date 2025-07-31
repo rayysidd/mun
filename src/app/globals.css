@@ -1,33 +1,35 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --background: #FDFBF5; /* Soft, warm off-white */
+  --foreground: #334155; /* Dark, desaturated slate gray for text */
+  --accent: #4A6C8C;      /* Muted, academic blue for accents */
+  --secondary-text: #64748b; /* Lighter slate for secondary text */
+  --border-color: #e2e8f0; /* Soft border color */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #1e293b; /* Dark slate background */
+    --foreground: #e2e8f0; /* Lighter text for dark mode */
+    --accent: #60A5FA;      /* A brighter blue for accents in dark mode */
+    --secondary-text: #94a3b8;
+    --border-color: #334155;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family:  Georgia, 'Times New Roman', Times, serif;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-/* In globals.css */
-.unifrakturmaguntia-regular {
+
+/* Custom class for the academic font style */
+.font-unifraktur {
   font-family: "UnifrakturMaguntia", cursive;
   font-weight: 400;
   font-style: normal;
 }
-

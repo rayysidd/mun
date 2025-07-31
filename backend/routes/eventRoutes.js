@@ -1,7 +1,7 @@
 const express = require('express');
 const { verifyToken } = require('../middleware/authMiddleware');
 
-const {createEvent,joinEvent,getEvents,getDelegates,leaveEvent,getSingleEvent,addSource,getSources} = require('../controllers/eventController')
+const {createEvent,joinEvent,getEvents,getDelegates,leaveEvent,getSingleEvent,addSource,getSources,queryAI} = require('../controllers/eventController')
 const router = express.Router();
 
 //file handling library
@@ -25,6 +25,9 @@ router.get('/:eventId/delegates',verifyToken,getDelegates);
 router.post('/:eventId/sources',verifyToken,addSource);
 router.get('/:eventId/sources',verifyToken,getSources);
 // router.post('/:eventId/upload',verifyToken,uploadPdf); will do later
+
+// --- AI QUERY ROUTE ---
+router.post('/:eventId/query', verifyToken, queryAI);
 
 //delete event
 router.delete('/:eventId/leave',verifyToken,upload.single('file'),leaveEvent);

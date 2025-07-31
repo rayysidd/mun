@@ -1,329 +1,515 @@
 'use client';
 
-import React,{useState, useEffect, useCallback} from "react";
 import { useRouter } from 'next/navigation';
-import { isAuthenticated } from '@/utils/auth';
-import MUNForm from "@/components/MUNForm";
-import MUNOutput from "@/components/MUNOutput";
-import Image from "next/image";
+import Image from 'next/image';
 
-export default function Home(){
+export default function HomePage() {
   const router = useRouter();
-  const [country,setCountry] = useState('');
-  const [committee,setCommittee] = useState('');
-  const [topic, setTopic] = useState('');
-  const [type, setType] = useState('');
-  const [context, setContext] = useState('');
-  const [output, setOutput] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [username, setUsername] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [briefMode, setBriefMode] = useState(false);
-
-  const handleLogout = useCallback(() => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('authToken');
-    setIsLoggedIn(false);
-    setUsername('');
-    router.push('/auth');
-  }, [router]);
-
-  useEffect(() => {
-    const checkAuth = () => {
-      if (!isAuthenticated()) {
-        router.push('/auth');
-      } else {
-        setIsLoggedIn(true);
-        const userData = localStorage.getItem('user');
-        try {
-          if (userData && userData !== 'undefined') {
-            const parsedUser = JSON.parse(userData);
-            setUsername(parsedUser.username || 'User');
-          } else {
-            console.warn("No valid user data in localStorage.");
-            setUsername('User');
-          }
-        } catch (error) {
-          console.error("Failed to parse user data from localStorage:", error);
-          setUsername('User');
-        }
-        setLoading(false);
-      }
-    };
-    checkAuth();
-  }, [router]);
-
-
-  const handleProfile = () => {
-    router.push('/profile');
-  };
-
-  const handleLogin = () => {
-    router.push('/auth');
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    const fullContext = [
-      committee && `Committee: ${committee}.`,
-      briefMode && `Generate a quick update instead of a formal speech.`,
-      context
-    ]
-      .filter(Boolean)
-      .join(' ')
-      .trim();
-
-    try {
-      const response = await fetch('http://localhost:5001/api/chat/speech', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          topic: topic,
-          country: country,
-          type: type,
-          committee: committee,
-          context: fullContext
-        }),
-      });
-
-      if (!response.ok) throw new Error('network error');
-
-      const data = await response.json();
-      setOutput(data.speech);
-      setSubmitted(true);
-    } catch (error) {
-      console.error('Fetch error:', error);
-      setOutput('Sorry, something went wrong. Please try again later.');
-      setSubmitted(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleBack = () => {
-    setSubmitted(false);
-  };
-
-  const handleReset = () => {
-    setCountry('');
-    setCommittee('');
-    setTopic('');
-    setType('');
-    setContext('');
-    setOutput('');
-    setSubmitted(false);
-    setIsLoading(false);
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-stone-50 flex items-center justify-center">
-        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full mx-4">
-          <div className="animate-pulse">
-            <div className="flex items-center justify-center mb-4">
-              <div className="w-16 h-16 bg-gray-200 rounded-full"></div>
-            </div>
-            <div className="space-y-3">
-              <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen bg-stone-50 from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
-      
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-indigo-400/10 to-blue-400/10 rounded-full blur-3xl"></div>
+    <main className="relative w-full min-h-screen overflow-hidden">
+      {/* World Map Image Background */}
+      <div className="world-map-background">
+        <div className="map-image-container">
+          <img 
+            src="https://www.georgethegeographer.co.uk/Base_maps/World_b&w_unnamed.jpg" 
+            alt="World Map"
+            className="world-map-image"
+          />
+        </div>
+        
+        {/* Interactive Overlay Elements */}
+        <svg className="world-map-overlay" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid slice">
+          {/* Major Cities/Capitals */}
+          <circle className="country-dot dot-1" cx="200" cy="130" r="4" />
+          <circle className="country-dot dot-2" cx="240" cy="320" r="4" />
+          <circle className="country-dot dot-3" cx="470" cy="110" r="4" />
+          <circle className="country-dot dot-4" cx="480" cy="260" r="4" />
+          <circle className="country-dot dot-5" cx="680" cy="140" r="4" />
+          <circle className="country-dot dot-6" cx="770" cy="340" r="4" />
+          <circle className="country-dot dot-7" cx="320" cy="150" r="4" />
+          <circle className="country-dot dot-8" cx="640" cy="120" r="4" />
+          
+          {/* Diplomatic Connection Routes */}
+          <path className="connection-line line-1" d="M200,130 Q300,100 470,110" stroke="rgba(192, 192, 192, 0.7)" strokeWidth="2" fill="none" strokeDasharray="8,12" />
+          <path className="connection-line line-2" d="M470,110 Q575,90 680,140" stroke="rgba(192, 192, 192, 0.7)" strokeWidth="2" fill="none" strokeDasharray="8,12" />
+          <path className="connection-line line-3" d="M240,320 Q360,290 480,260" stroke="rgba(192, 192, 192, 0.7)" strokeWidth="2" fill="none" strokeDasharray="8,12" />
+          <path className="connection-line line-4" d="M480,260 Q620,300 770,340" stroke="rgba(192, 192, 192, 0.7)" strokeWidth="2" fill="none" strokeDasharray="8,12" />
+          
+          {/* Pulsing Diplomatic Hubs */}
+          <circle className="diplomatic-hub hub-1" cx="200" cy="130" r="15" />
+          <circle className="diplomatic-hub hub-2" cx="470" cy="110" r="15" />
+          <circle className="diplomatic-hub hub-3" cx="680" cy="140" r="15" />
+          <circle className="diplomatic-hub hub-4" cx="480" cy="260" r="15" />
+        </svg>
+        
+        {/* Color Overlay for Navy Theme */}
+        <div className="color-overlay"></div>
       </div>
 
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-white/20 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-20">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center shadow-lg border border-gray-200">
-                <Image
-                  src="https://upload.wikimedia.org/wikipedia/commons/e/ee/UN_emblem_blue.svg"
-                  alt="UN Logo"
-                  width={28}
-                  height={28}
-                  className="w-6 h-6 sm:w-7 sm:h-7 object-contain"
-                />
-              </div>
-              <div>
-                <h1 className="text-xl sm:text-2xl font-bold font-unifraktur text-gray-800">
-                  DiploMate
-                </h1>
-                <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">
-                  AI-powered MUN assistant
-                </p>
-              </div>
-            </div>
+      {/* Floating Diplomatic Elements */}
+      <div className="floating-elements">
+        <div className="diplomatic-icon icon-1">🏛️</div>
+        <div className="diplomatic-icon icon-2">⚖️</div>
+        <div className="diplomatic-icon icon-3">🌍</div>
+        <div className="diplomatic-icon icon-4">🤝</div>
+        <div className="diplomatic-icon icon-5">📜</div>
+        <div className="diplomatic-icon icon-6">🕊️</div>
+      </div>
 
-            <div className="flex items-center gap-4">
-              {output && (
-                <>
-                  <button
-                    onClick={handleReset}
-                    className="px-4 py-2 sm:px-6 sm:py-2.5 bg-amber-100 hover:bg-stone-100 text-black rounded-xl font-medium transition-colors shadow-lg text-sm sm:text-base"
-                  >
-                    Clear Speech
-                  </button>
-                </>
-              )}
-              
-              {isLoggedIn ? (
-                <div className="flex items-center gap-3">
-                  <div className="hidden sm:flex items-center gap-2 text-sm text-gray-600">
-                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                      {username.charAt(0).toUpperCase()}
-                    </div>
-                    <span>Hi, {username}</span>
-                  </div>
-                  
-                  <button
-                    onClick={handleProfile}
-                    className="px-4 py-2 sm:px-5 sm:py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors shadow-lg text-sm sm:text-base flex items-center gap-2"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    <span className="hidden sm:inline">Profile</span>
-                  </button>
-                  
-                  <button
-                    onClick={handleLogout}
-                    className="px-4 py-2 sm:px-5 sm:py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-colors shadow-lg text-sm sm:text-base flex items-center gap-2"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    <span className="hidden sm:inline">Logout</span>
-                  </button>
-                </div>
-              ) : (
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={handleLogin}
-                    className="px-4 py-2 sm:px-6 sm:py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors shadow-lg text-sm sm:text-base flex items-center gap-2"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    <span>Login</span>
-                  </button>
-                </div>
-              )}
+      {/* Main Content */}
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 py-12">
+        
+        {/* Header Section */}
+        <header className="flex flex-col items-center gap-8 mb-16">
 
-              <div className="hidden md:flex items-center gap-2 text-sm text-gray-600">
-                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                <span>Ready to generate</span>
-              </div>
+          {/* This outer div provides the styled "box" */}
+          <div className="logo-container py-4 px-6">
+            {/* This new inner div arranges the content side-by-side */}
+            <div className="flex items-center gap-5">
+              <Image
+                src="https://upload.wikimedia.org/wikipedia/commons/e/ee/UN_emblem_blue.svg"
+                alt="DiploMate Logo"
+                width={70}
+                height={70}
+                className="logo-image"
+              />
+              <h1 className="brand-title">
+                DiploMate
+              </h1>
             </div>
           </div>
-        </div>
-      </nav>
 
-      <div className="relative z-10 pt-24 sm:pt-28 pb-8 px-3 sm:px-4 md:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+          <p className="mission-statement">
+            Your AI-powered command center for Model UN. Navigate complex diplomacy, 
+            forge strategic alliances, and master the art of international relations.
+          </p>
+        </header>
+
+        {/* Enhanced Navigation Buttons */}
+        <nav className="w-full max-w-5xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-1">
             
-            <div className="bg-amber-50/80 backdrop-blur-xl border border-white/20 rounded-2xl sm:rounded-3xl shadow-2xl h-fit">
-              <div className="p-6 sm:p-8">
-                <div className="border-b border-gray-200 pb-4 mb-6">
-                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-2">
-                    {output ? 'Edit Speech Parameters' : 'Generate Your Speech'}
-                  </h2>
-                  <p className="text-sm sm:text-base text-gray-600">
-                    {output ? 'Modify settings and generate new content' : 'Fill in the details below to create your diplomatic response'}
-                  </p>
-                </div>
-                
-                <MUNForm
-                  country={country}
-                  setCountry={setCountry}
-                  committee={committee}
-                  setCommittee={setCommittee}
-                  topic={topic}
-                  setTopic={setTopic}
-                  type={type}
-                  setType={setType}
-                  context={context}
-                  setContext={setContext}
-                  isBriefMode={briefMode}
-                  setIsBriefMode={setBriefMode}
-                  submitted={submitted}
-                  isLoading={isLoading}
-                  handleSubmit={handleSubmit}
-                />
-
+            
+            {/* Profile */}
+            <button
+              onClick={() => router.push('/profile')}
+              className="nav-card speech-card clickable-card"
+            >
+              <div className="card-icon">
+                <span className="text-3xl">👤</span>
               </div>
-            </div>
+              <h3 className="card-title">Profile Page</h3>
+              <p className="card-description">Manage your credentials, track achievements, and build your international reputation.</p>
+              
+            </button>
 
-            <div className="transition-all duration-700 ease-in-out">
-              {output ? (
-                <MUNOutput 
-                  output={output} 
-                  handleBack={handleBack}
-                  country={country}
-                  topic={topic}
-                  type={type}
-                />
-              ) : (
-                <div className="bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8">
-                  <div className="border-b border-gray-200 pb-4 mb-6">
-                    <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-2">Why Choose DiploMate?</h2>
-                    <p className="text-sm sm:text-base text-gray-600">Powerful features designed for MUN success</p>
-                  </div>
-                  
-                  <div className="space-y-6">
-                    <div className="flex items-start gap-4 p-4 bg-blue-50 rounded-xl border border-blue-100">
-                      <div className="text-3xl">⚡</div>
-                      <div>
-                        <h3 className="font-semibold text-gray-800 mb-1">Instant Generation</h3>
-                        <p className="text-sm text-gray-600">AI-powered responses generated in seconds, saving you valuable preparation time during committee sessions.</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start gap-4 p-4 bg-indigo-50 rounded-xl border border-indigo-100">
-                      <div className="text-3xl">🎯</div>
-                      <div>
-                        <h3 className="font-semibold text-gray-800 mb-1">Country-Specific Positioning</h3>
-                        <p className="text-sm text-gray-600">Tailored responses that reflect your assigned country&apos;s real diplomatic stance and foreign policy priorities.</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start gap-4 p-4 bg-purple-50 rounded-xl border border-purple-100">
-                      <div className="text-3xl">📝</div>
-                      <div>
-                        <h3 className="font-semibold text-gray-800 mb-1">Multiple Document Types</h3>
-                        <p className="text-sm text-gray-600">Generate opening speeches, position papers, draft resolutions, amendments, and working papers with ease.</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start gap-4 p-4 bg-green-50 rounded-xl border border-green-100">
-                      <div className="text-3xl">🌍</div>
-                      <div>
-                        <h3 className="font-semibold text-gray-800 mb-1">Global Coverage</h3>
-                        <p className="text-sm text-gray-600">Comprehensive support for all 193 UN member states with accurate diplomatic language and terminology.</p>
-                      </div>
-                    </div>                   
-                  </div>
-                </div>
-              )}
-            </div>
+            {/* Speech Writer Card */}
+            <button
+              onClick={() => router.push('/speech')}
+              className="nav-card speech-card clickable-card"
+            >
+              <div className="card-icon">
+                <span className="text-3xl">📝</span>
+              </div>
+              <h3 className="card-title">Speech Architect</h3>
+              <p className="card-description">Craft compelling diplomatic speeches, resolutions, and position papers with AI assistance.</p>
+            </button>
+            
+            {/* Events Card */}
+            <button
+              onClick={() => router.push('/events')}
+              className="nav-card events-card clickable-card"
+            >
+              <div className="card-icon">
+                <span className="text-3xl">🏛️</span>
+              </div>
+              <h3 className="card-title">Conference Hub</h3>
+              <p className="card-description">Organize Model UN conferences, manage committees, and coordinate diplomatic simulations.</p>
+            </button>
+            
           </div>
-        </div>
+        </nav>
+
+        {/* Footer */}
+        <footer className="mt-20 text-center">
+          <p className="footer-text">
+            Empowering the next generation of global leaders
+          </p>
+        </footer>
       </div>
-    </div>
+
+      <style jsx>{`
+        .world-map-background {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+        }
+
+        .map-image-container {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+        }
+
+        .world-map-image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center;
+          opacity: 0.4;
+          filter: contrast(1.2) brightness(0.8);
+        }
+
+        .color-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, 
+            rgba(12, 22, 49, 0.85) 0%, 
+            rgba(26, 47, 92, 0.75) 25%, 
+            rgba(43, 74, 138, 0.7) 50%, 
+            rgba(26, 47, 92, 0.75) 75%, 
+            rgba(12, 22, 49, 0.85) 100%
+          );
+          mix-blend-mode: multiply;
+        }
+
+        .world-map-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 2;
+        }
+
+        .country-dot {
+          fill: rgba(192, 192, 192, 0.9);
+          stroke: rgba(255, 255, 255, 0.6);
+          stroke-width: 1;
+          animation: dotPulse 4s infinite ease-in-out;
+          filter: drop-shadow(0 0 4px rgba(192, 192, 192, 0.5));
+        }
+
+        .dot-1 { animation-delay: 0s; }
+        .dot-2 { animation-delay: -0.5s; }
+        .dot-3 { animation-delay: -1s; }
+        .dot-4 { animation-delay: -1.5s; }
+        .dot-5 { animation-delay: -2s; }
+        .dot-6 { animation-delay: -2.5s; }
+        .dot-7 { animation-delay: -3s; }
+        .dot-8 { animation-delay: -3.5s; }
+
+        .connection-line {
+          animation: lineFlow 10s infinite linear;
+          filter: drop-shadow(0 0 2px rgba(192, 192, 192, 0.3));
+        }
+
+        .line-1 { animation-delay: 0s; }
+        .line-2 { animation-delay: -2s; }
+        .line-3 { animation-delay: -4s; }
+        .line-4 { animation-delay: -6s; }
+
+        .diplomatic-hub {
+          fill: none;
+          stroke: rgba(192, 192, 192, 0.4);
+          stroke-width: 1;
+          animation: hubPulse 6s infinite ease-in-out;
+        }
+
+        .hub-1 { animation-delay: 0s; }
+        .hub-2 { animation-delay: -1.5s; }
+        .hub-3 { animation-delay: -3s; }
+        .hub-4 { animation-delay: -4.5s; }
+
+        .floating-elements {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 3;
+        }
+
+        .diplomatic-icon {
+          position: absolute;
+          font-size: 2rem;
+          opacity: 0.5;
+          animation: diplomaticFloat 25s infinite ease-in-out;
+          filter: grayscale(0.2) brightness(1.3) drop-shadow(0 0 10px rgba(192, 192, 192, 0.3));
+        }
+
+        .icon-1 { top: 15%; left: 10%; animation-delay: 0s; }
+        .icon-2 { top: 25%; right: 15%; animation-delay: -5s; }
+        .icon-3 { top: 45%; left: 5%; animation-delay: -10s; }
+        .icon-4 { top: 35%; right: 8%; animation-delay: -15s; }
+        .icon-5 { bottom: 30%; left: 12%; animation-delay: -20s; }
+        .icon-6 { bottom: 20%; right: 20%; animation-delay: -3s; }
+
+        .logo-container {
+          position: relative;
+          padding: 1.5rem;
+          background: linear-gradient(135deg, rgba(192, 192, 192, 0.15), rgba(192, 192, 192, 0.05));
+          border-radius: 24px;
+          border: 1px solid rgba(192, 192, 192, 0.3);
+          backdrop-filter: blur(20px);
+        }
+
+        .logo-image {
+          filter: brightness(0) saturate(100%) invert(75%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(1.2) contrast(1);
+          animation: logoRotate 20s infinite linear;
+        }
+
+        .brand-title {
+          font-size: clamp(2.5rem, 8vw, 5rem);
+          font-weight: 900;
+          color: #e6e6e6; /* Use a solid color for visibility */
+          font-family: 'Playfair Display', serif;
+          letter-spacing: -0.02em;
+          animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        .brand-subtitle {
+          font-size: clamp(1rem, 3vw, 1.5rem);
+          color: rgba(192, 192, 192, 0.9);
+          font-weight: 500;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+        }
+
+        .mission-statement {
+          max-width: 42rem;
+          font-size: clamp(1rem, 2.5vw, 1.25rem);
+          line-height: 1.7;
+          color: rgba(192, 192, 192, 0.95);
+          font-weight: 300;
+          margin: 0 auto;
+          text-align: center;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-card {
+          position: relative;
+          background: linear-gradient(135deg, 
+            rgba(13, 22, 49, 0.95) 0%, 
+            rgba(26, 47, 92, 0.9) 50%, 
+            rgba(13, 22, 49, 0.95) 100%
+          );
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(192, 192, 192, 0.2);
+          border-radius: 24px;
+          padding: 2.5rem;
+          text-decoration: none;
+          display: flex;
+          flex-direction: column;
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          overflow: hidden;
+          min-height: 200;
+        }
+
+        .clickable-card {
+          cursor: pointer;
+          text-align: left;
+          border: none;
+          font-family: inherit;
+        }
+
+        .nav-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 4px;
+          background: linear-gradient(90deg, #c0c0c0, #e6e6e6, #c0c0c0);
+          transform: scaleX(0);
+          transition: transform 0.4s ease;
+        }
+
+        .nav-card::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 0;
+          height: 0;
+          background: radial-gradient(circle, rgba(192, 192, 192, 0.1) 0%, transparent 70%);
+          transform: translate(-50%, -50%);
+          transition: all 0.6s ease;
+        }
+
+        .nav-card:hover::before {
+          transform: scaleX(1);
+        }
+
+        .nav-card:hover::after {
+          width: 300px;
+          height: 300px;
+        }
+
+        .nav-card:hover {
+          transform: translateY(-12px) scale(1.02);
+          border-color: rgba(192, 192, 192, 0.4);
+          box-shadow: 
+            0 25px 50px rgba(0, 0, 0, 0.4),
+            0 0 30px rgba(192, 192, 192, 0.15),
+            inset 0 1px 0 rgba(192, 192, 192, 0.1);
+        }
+
+        .card-icon {
+          width: 3rem;
+          height: 3rem;
+          color: #c0c0c0;
+          margin-bottom: 1.5rem;
+          transition: all 0.3s ease;
+          position: relative;
+          z-index: 2;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .nav-card:hover .card-icon {
+          transform: scale(1.1);
+          color: #e6e6e6;
+          filter: drop-shadow(0 0 15px rgba(192, 192, 192, 0.5));
+        }
+
+        .card-title {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #c0c0c0;
+          margin-bottom: 1rem;
+          font-family: 'Playfair Display', serif;
+          position: relative;
+          z-index: 2;
+        }
+
+        .card-description {
+          color: rgba(192, 192, 192, 0.8);
+          line-height: 1.6;
+          font-size: 0.95rem;
+          margin-bottom: 2rem;
+          position: relative;
+          z-index: 2;
+          flex-grow: 1;
+        }
+
+        .action-button {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background: linear-gradient(135deg, rgba(192, 192, 192, 0.1), rgba(192, 192, 192, 0.05));
+          border: 1px solid rgba(192, 192, 192, 0.2);
+          border-radius: 12px;
+          padding: 1rem 1.5rem;
+          color: #c0c0c0;
+          font-weight: 500;
+          transition: all 0.3s ease;
+          position: relative;
+          z-index: 2;
+          cursor: pointer;
+          font-family: inherit;
+          font-size: 0.95rem;
+          margin-top: auto;
+        }
+
+        .action-button:hover {
+          background: linear-gradient(135deg, rgba(192, 192, 192, 0.15), rgba(192, 192, 192, 0.08));
+          border-color: rgba(192, 192, 192, 0.3);
+          color: #e6e6e6;
+        }
+
+        .card-arrow {
+          font-size: 1.2rem;
+          transition: all 0.3s ease;
+          opacity: 0.7;
+        }
+
+        .nav-card:hover .card-arrow {
+          transform: translateX(8px);
+          opacity: 1;
+        }
+
+        .footer-text {
+          color: rgba(192, 192, 192, 0.6);
+          font-size: 0.9rem;
+          font-style: italic;
+          letter-spacing: 0.05em;
+        }
+
+        @keyframes dotPulse {
+          0%, 100% { 
+            fill: rgba(192, 192, 192, 0.9);
+            transform: scale(1);
+          }
+          50% { 
+            fill: rgba(255, 255, 255, 1);
+            transform: scale(1.2);
+          }
+        }
+
+        @keyframes lineFlow {
+          0% { stroke-dashoffset: 0; }
+          100% { stroke-dashoffset: 60; }
+        }
+
+        @keyframes hubPulse {
+          0%, 100% { 
+            stroke: rgba(192, 192, 192, 0.4);
+            r: 15;
+          }
+          50% { 
+            stroke: rgba(192, 192, 192, 0.7);
+            r: 20;
+          }
+        }
+
+        @keyframes diplomaticFloat {
+          0%, 100% { transform: translateY(0px) scale(1); opacity: 0.5; }
+          25% { transform: translateY(-15px) scale(1.1); opacity: 0.7; }
+          50% { transform: translateY(-5px) scale(0.9); opacity: 0.6; }
+          75% { transform: translateY(-10px) scale(1.05); opacity: 0.8; }
+        }
+
+        @keyframes logoRotate {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+
+        @keyframes titleGlow {
+          0% { text-shadow: 0 0 20px rgba(192, 192, 192, 0.3); }
+          100% { text-shadow: 0 0 30px rgba(192, 192, 192, 0.6), 0 0 40px rgba(192, 192, 192, 0.3); }
+        }
+
+        @media (max-width: 768px) {
+          .nav-card {
+            padding: 2rem;
+            min-height: 280px;
+          }
+
+          .diplomatic-icon {
+            font-size: 1.5rem;
+          }
+
+          .world-map-image {
+            opacity: 0.3;
+          }
+
+          .country-dot {
+            r: 3;
+          }
+        }
+      `}</style>
+    </main>
   );
 }
