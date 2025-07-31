@@ -12,7 +12,7 @@ export default function HomePage() {
       <div className="world-map-background">
         <div className="map-image-container">
           <img 
-            src="https://www.georgethegeographer.co.uk/Base_maps/World_b&w_unnamed.jpg" 
+            src='/images/world-map.jpg' 
             alt="World Map"
             className="world-map-image"
           />

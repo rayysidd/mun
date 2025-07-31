@@ -168,7 +168,7 @@ export default function EventsPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center">
         {/* Loading state styled like Profile Page */}
-        <div className="world-map-background"><div className="map-image-container"><img src="https://www.georgethegeographer.co.uk/Base_maps/World_b&w_unnamed.jpg" alt="World Map Background" className="world-map-image"/></div><div className="color-overlay"></div></div>
+        <div className="world-map-background"><div className="map-image-container"><img src="/images/world-map.jpg" alt="World Map Background" className="world-map-image"/></div><div className="color-overlay"></div></div>
         <div className="text-center relative z-10">
           <div className="diplomatic-loader mb-6"><div className="w-16 h-16 border-4 border-silver/20 border-t-silver rounded-full animate-spin mx-auto"></div></div>
           <p className="text-silver/80 text-lg">Loading your events...</p>
@@ -180,7 +180,7 @@ export default function EventsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 relative overflow-hidden pb-32">
       {/* Background from Profile Page */}
-      <div className="world-map-background"><div className="map-image-container"><img src="https://www.georgethegeographer.co.uk/Base_maps/World_b&w_unnamed.jpg" alt="World Map Background" className="world-map-image"/></div><div className="color-overlay"></div></div>
+      <div className="world-map-background"><div className="map-image-container"><img src="/images/world-map.jpg" alt="World Map Background" className="world-map-image"/></div><div className="color-overlay"></div></div>
       
       {/* Navigation bar from Profile Page */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-silver/20 shadow-xl">
