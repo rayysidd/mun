@@ -16,13 +16,6 @@
 
 ---
 
-## 🌐 Live Preview
-
-- 🔗 [App Homepage (WIP)](https://diplomate.vercel.app/)
-- 🔐 [Direct Auth Page (Dev)](https://mun-rayysidds-projects.vercel.app/auth)
-
----
-
 ## 👨‍💻 Key Features
 
 ### 1. 🧑‍💼 Delegate Personalisation  
