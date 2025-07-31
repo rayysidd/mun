@@ -1,53 +1,124 @@
-Check it out here : [https://diplomate.vercel.app/](https://mun-rayysidds-projects.vercel.app/auth)
+DiploMate 🏛️
+AI-Powered Model UN Strategy Platform
+DiploMate is a full-stack, collaborative web application designed to be a comprehensive research and strategy partner for Model United Nations (MUN) participants. It moves beyond simple speech generation by allowing users to create event-specific workspaces, build shared knowledge bases from external sources, and query that knowledge using a sophisticated Retrieval-Augmented Generation (RAG) pipeline to get factually grounded, context-aware answers.
 
-## 🏛️ DiploMate (Work in Progress)
+✨ Key Features
+Event-Based Workspaces: Create and join secure MUN events with unique passcodes. Each event is a self-contained workspace.
 
-### 📌 Overview
+Collaborative Knowledge Base: Add knowledge sources (URLs or pasted text) to an event. These sources form a curated knowledge base for the AI.
 
-**DiploMate** is an AI-powered research and speech-generation tool built to support Model United Nations delegates. It helps users craft committee- and agenda-specific speeches, anticipate rebuttals, and analyze diplomatic stances — all tailored to the delegate's country.
+RAG-Powered AI Assistant: A real-time chat interface where users can query the AI. The AI uses the event's specific knowledge base to provide factually grounded answers, minimizing hallucinations.
 
-> ✅ Core AI functionality is implemented. UI and dashboard features are currently under development.
+Dynamic Prompt Engineering: The AI intelligently detects user intent (factual question vs. creative command) and tailors its response strategy accordingly.
 
----
+User-Controlled Context: Users can toggle whether the AI uses the knowledge base (RAG) or its own general knowledge. They can also manually select specific sources to focus the AI's attention.
 
-### ✅ Completed Features
+Speech Generation Integration: Autofill the speech writer form with event context, and use the AI to find and add factual context directly from the knowledge base.
 
-* 🌍 **Country Stance Analyzer** — Generates detailed stance based on selected country, committee, and agenda
-* 🗣️ **Opening Speech Generator** — Creates formal, context-aware speeches from user input
-* 🧠 **Rebuttal & Accusation Assistant** — Helps prepare responses to likely questions, accusations, and attacks
+Persistent Memory: Save valuable AI responses as new sources, creating a powerful feedback loop where the AI's best outputs become part of its future knowledge.
 
----
+🛠️ Tech Stack & Architecture
+DiploMate uses a hybrid, microservice-based architecture to leverage the strengths of different technology ecosystems.
 
-### 🚧 In Progress / Planned
+graph TD
+    A[Next.js Frontend] -->|API Calls| B(Node.js/Express Backend);
+    B -->|CRUD Ops| C[MongoDB Atlas];
+    B -->|Proxy AI Queries| D(Python/FastAPI AI Service);
+    D -->|Similarity Search| E[ChromaDB Vector Store];
+    D -->|Generate Response| F[Gemini API];
+    G[Python Ingestion Service] -->|Reads Sources| C;
+    G -->|Writes Embeddings| E;
 
-* 📄 Draft resolution generator
-* 📤 Export speeches and rebuttals as PDF/Word
-* 🔐 User authentication (email-password, JWT)
-* 🧾 Editable dashboard for saved content
-* 🌐 Real-time data integration (scraping or API-based)
-* 📱 Mobile app with sync
-* 🧠 RAG (Retrieval-Augmented Generation) to ground AI responses in current global events and UN sources
----
+    subgraph User's Browser
+        A
+    end
 
-### 🧰 Tech Stack
+    subgraph Main Server
+        B
+        C
+    end
 
-* **Frontend:** Next.js, TailwindCSS
-* **Backend:** Node.js, Express.js, MongoDB
-* **Auth:** JWT + bcrypt
-* **AI API:** Gemini (Google Generative AI)
----
+    subgraph AI Microservice
+        D
+        E
+        G
+    end
 
-### 📦 Getting Started (once open-sourced)
+Frontend: Next.js, React, TypeScript, Tailwind CSS
 
-```bash
-# Clone the repo
-git clone https://github.com/yourusername/mun-assistant
+Backend (Main API): Node.js, Express.js, MongoDB (with Mongoose), JWT for authentication.
 
-# Install dependencies
-cd client && npm install
-cd ../server && npm install
+Backend (AI Service):
 
-# Add .env file with API keys and Mongo URI
-# Run both frontend and backend
-npm run dev (client) | node index.js (server)
-```
+API: Python, FastAPI
+
+AI/ML: sentence-transformers (for embeddings), nltk (for chunking), google-generativeai (for LLM generation)
+
+Databases: ChromaDB (for local vector storage), pymongo (to connect to MongoDB)
+
+🚀 Getting Started
+Follow these instructions to get the project running locally.
+
+Prerequisites
+Node.js (v18 or later)
+
+Python (v3.9 or later)
+
+A MongoDB Atlas account and a connection string (URI).
+
+A Google Gemini API Key.
+
+1. Clone the Repository
+git clone <your-repo-url>
+cd mun
+
+2. Setup the Backend (Node.js)
+Navigate to the backend directory:
+
+cd backend
+
+Install dependencies:
+
+npm install
+
+Create a .env file and add your secrets:
+
+MONGODB_URI="your_mongodb_atlas_connection_string"
+JWT_SECRET="a_strong_secret_key_for_jwt"
+GEMINI_API_KEY="your_google_gemini_api_key"
+
+Run the backend server (this will run on http://localhost:5001):
+
+npm run dev
+
+3. Setup the AI Service (Python)
+Open a new terminal. Navigate to the project's root (mun) directory.
+
+Create and activate a Python virtual environment:
+
+cd server-python
+python3 -m venv venv
+source venv/bin/activate
+
+Install dependencies:
+
+pip install -r requirements.txt
+
+In this terminal, run the ingestion service (this will run in the background):
+
+python ingestion_service.py
+
+Open a third terminal. Navigate to the project root (mun) and activate the virtual environment again.
+
+Run the API server (this will run on http://localhost:8000):
+
+uvicorn server-python.main:app --reload
+
+4. Setup the Frontend (Next.js)
+Open a fourth terminal. Navigate to the project's root (mun) directory.
+
+Install dependencies:
+
+npm install
+
+Run the frontend development server (this will run on `http
