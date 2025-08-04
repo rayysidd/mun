@@ -45,3 +45,5 @@ firebase-service-account.json
 
 # Python virtual environment
 server-python/venv/
+__pycache__
+chroma_db
